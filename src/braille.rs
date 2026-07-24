@@ -633,7 +633,7 @@ fn nemeth_cleanup(pref_manager: Ref<PreferenceManager>, raw_braille: String) -> 
     static NEMETH_INDICATOR_REPLACEMENTS: phf::Map<&str, &str> = phf_map! {
         "S" => "⠠⠨",    // sans-serif
         "B" => "⠸",     // bold
-        "𝔹" => "⠨",     // blackboard
+        "𝔹" => "⠠⠸",     // blackboard
         "T" => "⠈",     // script
         "I" => "⠨",     // italic (mapped to be the same a blackboard)
         "R" => "",      // roman

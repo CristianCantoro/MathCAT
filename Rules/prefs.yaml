@@ -64,7 +64,7 @@
       # Here we provide an option to specify a transcriber-defined typeform changes, with the default mapping DoubleStruck to Italic
       SansSerif:    "⠠⠨"     # first transcriber-defined typeform prefix indicator
       Bold:         "⠸"     # t
-      DoubleStruck: "⠨"     # script
+      DoubleStruck: "⠠⠸"     # script
       Script:       "⠈"     # script
       Italic:       "⠨"     # script
 
