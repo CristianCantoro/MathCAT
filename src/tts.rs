@@ -385,7 +385,7 @@ impl TTS {
             match command.value {
                 TTSCommandValue::XPath(xpath) => {
                     let value = xpath.evaluate(rules_with_context.get_context(), mathml)
-                        .with_context(|| format!("in 'spell': can't evaluate xpath \"{}\"", &xpath.to_string()) )?;
+                        .with_context(|| format!("in 'spell': can't evaluate xpath \"{}\"", xpath) )?;
                     let value_string = match value {
                         Value::String(s) => s,
                         Value::Nodeset(nodes) if nodes.size() == 1 => {
@@ -396,14 +396,14 @@ impl TTS {
                                 if crate::xpath_functions::is_leaf(el) {
                                     crate::canonicalize::as_text(el).to_string()
                                 } else {
-                                    bail!("in 'spell': value returned from xpath '{}' does not evaluate to a string",  &xpath.to_string());
+                                    bail!("in 'spell': value returned from xpath '{}' does not evaluate to a string",  xpath);
                                 }
                             } else {
                                 bail!("in 'spell': value returned from xpath '{}' does not evaluate to a string, it is {} nodes",
-                                        &xpath.to_string(), nodes.size());
+                                        xpath, nodes.size());
                             }
                         },
-                        _ => bail!("in 'spell': value returned from xpath '{}' does not evaluate to a string",  &xpath.to_string()),
+                        _ => bail!("in 'spell': value returned from xpath '{}' does not evaluate to a string",  xpath),
                     };
                     // Chemistry wants to spell elements like "Na". But we also have the issue of capitalization (SpeechOverrides_CapitalLetters)
                     //   so the "N" need to use that. The logic for that is already in unicode.yaml. We could replicate that here.
@@ -586,7 +586,7 @@ impl TTS {
             },
             TTSCommand::Pronounce => if is_start_tag {
                 let pronounce = command.value.get_pronounce()?;
-                Ok(format!("<pron sym='{}'>{}", &pronounce.sapi5, &pronounce.text))
+                Ok(format!("<pron sym='{}'>{}", pronounce.sapi5, pronounce.text))
             } else {
                 Ok(String::from("</pron>"))
             },
@@ -650,7 +650,7 @@ impl TTS {
             },
             TTSCommand::Pronounce => if is_start_tag {
                 let pronounce = command.value.get_pronounce()?;
-                Ok(format!("<phoneme alphabet='ipa' ph='{}'>{}", &pronounce.ipa, &pronounce.text))
+                Ok(format!("<phoneme alphabet='ipa' ph='{}'>{}", pronounce.ipa, pronounce.text))
             } else {
                 Ok(String::from("</phoneme>"))
             },
