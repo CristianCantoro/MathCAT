@@ -256,8 +256,6 @@
  - "⊞": [t: "1⠫⠼⠙⠪⠐⠖t"]         # 0x229E (Squared plus)
  - "⊟": [t: "1⠫⠼⠙⠪⠐⠤t"]         # 0x229F (Squared minus)
  - "⊠": [t: "1⠫⠼⠙⠪⠐⠦t"]         # 0x22A0 (Squared times)
- - "⋇": [t: "1⠌⠯⠦"]             # 0x22C7 (Division times)
- - "⊩": [t: "⠸⠳⠿⠸⠒"]            # 0x22A9 (Forces)
  - "˙": [t: "1⠲"]               # 0x02D9 ( Dot Above)
  - "¨": [t: "1⠲⠲"]              # 0x00A8 ( Diaeresis/Double Dot Above )
  - "©": [t: "⠘⠉"]               # 0xa9 (Copyright)
@@ -506,3 +504,7 @@
  - "∆": [t: "CGL⠙"]             # 0x2206 (Increment (capital Greek delta))
  - "∏": [t: "CGL⠏"]             # 0x220F (Product (capital Greek pi))
  - "∑": [t: "CGL⠎"]             # 0x2211 (Sum (capital Greek sigma))
+
+ # --- restored short definitions that differ from unicode-full ---
+ - "⋇": [t: "1⠌⠯⠦"]             # 0x22C7 (Division times)
+ - "⊩": [t: "⠸⠳⠿⠸⠒"]            # 0x22A9 (Forces)
