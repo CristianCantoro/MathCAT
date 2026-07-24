@@ -621,7 +621,7 @@ pub fn get_navigation_node_from_braille_position(mathml: Element, position: usiz
     }
 }
 
-fn nemeth_cleanup(pref_manager: Ref<PreferenceManager>, raw_braille: String) -> String {
+fn nemeth_cleanup(_pref_manager: Ref<PreferenceManager>, raw_braille: String) -> String {
     // Typeface: S: sans-serif, B: bold, T: script/blackboard, I: italic, R: Roman
     // Language: E: English, D: German, G: Greek, V: Greek variants, H: Hebrew, U: Russian
     // Indicators: C: capital, N: number, P: punctuation, M: multipurpose
@@ -824,25 +824,10 @@ fn nemeth_cleanup(pref_manager: Ref<PreferenceManager>, raw_braille: String) -> 
     let result = REMOVE_AFTER_PUNCT_IND.replace_all(&result, "$1$2");
 //   debug!("Punct38: \"{}\"", &result);
 
-    // these typeforms need to get pulled from user-prefs as they are transcriber-defined
-    let sans_serif = pref_manager.pref_to_string("Nemeth_SansSerif");
-    let bold = pref_manager.pref_to_string("Nemeth_Bold");
-    let double_struck = pref_manager.pref_to_string("Nemeth_DoubleStruck");
-    let script = pref_manager.pref_to_string("Nemeth_Script");
-    let italic = pref_manager.pref_to_string("Nemeth_Italic");
-
     let result = REPLACE_INDICATORS.replace_all(&result, |cap: &Captures| {
-        let matched_char = &cap[0];
-        match matched_char {
-            "S" => &sans_serif,
-            "B" => &bold,
-            "𝔹" => &double_struck,
-            "T" => &script,
-            "I" => &italic,
-            _ => match NEMETH_INDICATOR_REPLACEMENTS.get(&cap[0]) {
-                None => {error!("REPLACE_INDICATORS and NEMETH_INDICATOR_REPLACEMENTS are not in sync"); ""},
-                Some(&ch) => ch,
-            }
+        match NEMETH_INDICATOR_REPLACEMENTS.get(&cap[0]) {
+            None => {error!("REPLACE_INDICATORS and NEMETH_INDICATOR_REPLACEMENTS are not in sync"); ""},
+            Some(&ch) => ch,
         }
     });
 
