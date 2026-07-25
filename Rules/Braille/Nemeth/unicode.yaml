@@ -230,7 +230,9 @@
           then: [t: "𝑁⠨"]      # example 8c(4) -- lone "." is not considered numeric, but not a period
           else: [t: "N⠨"]
         else_test:
-          if: "preceding-sibling::*[1][@data-roman-numeral or
+        - if: "parent::m:mover and preceding-sibling::*"
+          then: [t: "⠡"]
+        - else_if: "preceding-sibling::*[1][@data-roman-numeral or
                   (name(.)='mrow' and *[last()][@data-roman-numeral])]"
           then: [t: "𝐏⠲"]
           else: [t: "P⠲"]

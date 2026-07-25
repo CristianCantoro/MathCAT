@@ -161,3 +161,13 @@ fn no_omission_for_spaces_in_middle() -> Result<()> {
 
 }
 
+#[test]
+fn dots() -> Result<()> {
+  let expr = "<math>
+         <mover><mi>x</mi><mo>.</mo></mover><mo>+</mo>
+         <mover><mi>x</mi><mo>..</mo></mover><mo>+</mo>
+         <mover><mi>x</mi><mo>...</mo></mover>
+    </math>";
+    test_braille("Nemeth",expr, "⠐⠭⠣⠡⠻⠬⠐⠭⠣⠡⠡⠻⠬⠐⠭⠣⠡⠡⠡⠻")?;
+  return Ok(());
+}
