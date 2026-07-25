@@ -969,7 +969,11 @@ impl CanonicalizeContext {
 								return Some(result);
 							}
 						},
-						"..." => {mathml.set_text("…");},  // name might need to change -- checked below
+						"..." => {
+							if name(get_parent(mathml)) != "mover" {
+								mathml.set_text("…");
+							}  // name might need to change -- checked below
+						},
 						":" => {
 							if is_ratio(mathml) {
 								mathml.set_text("∶");	// ratio U+2236
