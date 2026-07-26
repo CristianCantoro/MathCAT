@@ -139,10 +139,10 @@
         then_test:
             if: "following-sibling::*[1] = '⋮'"
             then: [t: "⠨⠹"]      # output only the first of the two chars
-        else: [t: "⠣⠄⠄⠄"]
+        else: [t: "⠩⠄⠄"]
  - "⋯": [t: "⠄⠄⠄"]              # 0x22ef
- - "⋰": [t: "⠘⠄⠄⠄"]             # 0x22f0
- - "⋱": [t: "⠰⠄⠄⠄"]             # 0x22f1
+ - "⋰": [t: "⠘⠄⠄"]             # 0x22f0
+ - "⋱": [t: "⠰⠄⠄"]             # 0x22f1
  - "≡":                         # 0x2261
     - test:
         if: "@data-chemical-bond"
