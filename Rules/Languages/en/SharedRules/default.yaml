@@ -62,7 +62,7 @@
   - test:
     - if: "string-length(.) = 1 and text() != '_'"       # need unicode.tdl to kick in for single letter tokens
       then: [x: "text()"]
-    - else_if: "@data-chem-element or @data-roman-numeral"                      # NavMode=Character needs this
+    - else_if: "@data-chem-element > 0 or @data-roman-numeral"                      # NavMode=Character needs this
       then: [spell: "text()", pause: "short"]
       else: [x: "translate(., '-_\u00A0', '  ')"]   # from intent literals or from extra spaces added (which get deleted)
 
