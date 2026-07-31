@@ -763,7 +763,6 @@ fn left_sup_75_12() -> Result<()> {
 
 #[test]
 fn left_sub_14_104() -> Result<()> {
-    init_logger();
     // Right Subscript Followed by Left Subscript
     let expr = "<math><msub><mi>P</mi><mi>b</mi></msub><mmultiscripts><mi>Q</mi><mprescripts/><mi>c</mi><none/></mmultiscripts></math>";
     test_braille("Nemeth", expr, "⠠⠏⠰⠃⠐⠰⠉⠐⠠⠟")?;
