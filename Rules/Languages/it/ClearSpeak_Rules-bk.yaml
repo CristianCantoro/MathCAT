@@ -34,16 +34,16 @@
   replace:
   - test:
       if: "$Verbosity!='Terse'"
-      then: [OT: "la"]      # phrase('the' square root of 25)
+      then: [ot: "la"]      # phrase('the' square root of 25)
   - test:
       if: "$ClearSpeak_Roots = 'PosNegSqRoot' or $ClearSpeak_Roots = 'PosNegSqRootEnd'"
       then:
       - bookmark: "*[1]/@id"
       - test:
           if: "parent::*[self::m:minus and count(*)=1]"
-          then: [T: "meno"]      # phrase(minus 4 is a 'negative' number)
-          else: [T: "più"]      # phrase(10 is a 'positive' number)
-  - T: "radice quadrata"      # phrase(8 is the 'square root' of 64)
+          then: [T: "negativo"]      # phrase(minus 4 is a 'negative' number)
+          else: [t: "positive"]      # phrase(10 is a 'positive' number)
+  - t: "radice quadrata"      # phrase(8 is the 'square root' of 64)
   - test:
       if: "$Verbosity!='Terse'"
       then: [T: "di"]      # phrase(the square root 'of' 5)
@@ -65,7 +65,7 @@
   replace:
   - test:
       if: "$Verbosity!='Terse'"
-      then: [OT: ""]      # phrase(6 is 'the' square root of 36). Say nothing, leave blank for reintegration if necessary
+      then: [ot: "the"]      # phrase(6 is 'the' square root of 36)
   - test:
       if: "$ClearSpeak_Roots = 'PosNegSqRoot' or $ClearSpeak_Roots = 'PosNegSqRootEnd'"
       then:
@@ -74,23 +74,22 @@
           then: [bookmark: "parent/@id"]
       - test:
           if: "parent::m:minus"
-          then: [T: "meno"]      # phrase(minus 6 is a 'negative' number)
-          else: [T: "più"]      # phrase(10 is a 'positive' number)
+          then: [T: "negativo"]      # phrase(minus 6 is a 'negative' number)
+          else: [t: "positive"]      # phrase(10 is a 'positive' number)
   - test:
       if: "*[2][self::m:mn and not(contains(., '.'))]"
       then_test:
       - if: "*[2][.='2']"
-        then: [T: "radice quadrata"]      # phrase(5 is the 'square root' of 25)
+        then: [t: "radice quadrata"]      # phrase(5 is the 'square root' of 25)
       - else_if: "*[2][.='3']"
         then: [T: "radice cubica"]      # phrase(5 is the 'cube root' of 625)
-      - else: [T: "radice", x: "ToOrdinal(*[2])"]      # phrase(the square 'root' of 25)
+      - else: [x: "ToOrdinal(*[2])", t: "root"]      # phrase(the square 'root' of 25)
       else:
       - test:
           if: "*[2][self::m:mi][string-length(.)=1]"
           then:
           - x: "*[2]"
-          #- pronounce: [text: "-th", ipa: "θ", sapi5: "th", eloquence: "T"]
-          - T: "esima"
+          - pronounce: [text: "-th", ipa: "θ", sapi5: "th", eloquence: "T"]
           else: [x: "*[2]"]
       - T: "radice"      # phrase(the square 'root' of 36)
   - test:
@@ -122,8 +121,8 @@
       - bookmark: "@id"
       - test:
           if: "self::m:minus"
-          then: [T: "meno"]      # phrase(minus 5 is a 'negative' number)
-          else: [T: "più"]      # phrase(7 is a 'positive' number)
+          then: [T: "negativo"]      # phrase(minus 5 is a 'negative' number)
+          else: [T: "positivo"]      # phrase(7 is a 'positive' number)
   - x: "*[1]"
 
 # Fraction rules
@@ -166,13 +165,13 @@
       then:
       - test:
           if: "$Verbosity!='Terse'"
-          then: [OT: ""] #Say nothing, leave placeholder for reintegration
+          then: [ot: "la"]
       - T: "frazione"      # phrase(the 'fraction' with 3 over 4)
   - x: "*[1]"
-  - T: "fratto"      # phrase(the fraction 3 'over' 4) 
+  - T: "fratto"      # phrase(the fraction 3 'over' 4)
   - x: "*[2]"
   - test:
-      # very ugly!!! -- replicate nested ordinal fracti	on as they are an exception
+      # very ugly!!! -- replicate nested ordinal fraction as they are an exception
       if: "$ClearSpeak_Fractions='OverEndFrac' or ($ClearSpeak_Fractions='EndFrac' and not( ($ClearSpeak_Fractions='Auto' or $ClearSpeak_Fractions='Ordinal' or $ClearSpeak_Fractions='EndFrac') and *[1][*[1][self::m:mn][not(contains(., '.')) and ($ClearSpeak_Fractions='Ordinal' or text()<20)]   and *[2][self::m:mn][not(contains(., '.')) and ($ClearSpeak_Fractions='Ordinal' or (2<= text() and text()<=10))] ] and *[2][*[1][self::m:mn][not(contains(., '.')) and ($ClearSpeak_Fractions='Ordinal' or text()<20)]   and *[2][self::m:mn][not(contains(., '.')) and ($ClearSpeak_Fractions='Ordinal' or (2<= text() and text()<=10))] ] ) )"
       then:
       - pause: short
@@ -211,7 +210,7 @@
   tag: fraction
   match: "."
   replace:
-  - OT: ""      # phrase(5 is 'the' square toot of 25), say nothing, leave placeholder
+  - ot: "la"      # phrase(5 is 'the' square toot of 25)
   - T: "frazione con numeratore"      # phrase(the 'fraction with numerator' 6)
   - test:
       if: "not(IsNode(*[1], 'simple'))"
@@ -237,11 +236,11 @@
   replace:
   - test:
       if: "$ClearSpeak_Trig = 'TrigInverse'"
-      then: [x: "*[1]", bookmark: "*[2]/@id", T: "inverse"]      # phrase(8 over 5 is the 'inverse' of 5 over 8)
+      then: [x: "*[1]", bookmark: "*[2]/@id", t: "inverse"]      # phrase(8 over 5 is the 'inverse' of 5 over 8)
       else_test:
         if: "$ClearSpeak_Trig = 'ArcTrig'"
-        then: [bookmark: "*[2]/@id", T: "arco", x: "*[1]"]      # phrase(the 'arc' of a circle)
-        else: [bookmark: "*[2]/@id", T: "inversa", x: "*[1]"] # default/Auto      # phrase(8 over 5 is the 'inverse' of 5 over 8)
+        then: [bookmark: "*[2]/@id", t: "arc", x: "*[1]"]      # phrase(the 'arc' of a circle)
+        else: [bookmark: "*[2]/@id", t: "inverse", x: "*[1]"] # default/Auto      # phrase(8 over 5 is the 'inverse' of 5 over 8)
 
 - name: function-squared-or-cubed
   tag: power
@@ -253,8 +252,8 @@
   - bookmark: "*[2]/@id"
   - test:
       if: "*[2][.='2']"
-      then: [T: "al quadrato"]      # phrase(25 equals 5 'squared')
-      else: [T: "al cubo"]      # phrase(625 equals 5 'cubed')
+      then: [t: "al quadrato"]      # phrase(25 equals 5 'squared')
+      else: [t: "cubed"]      # phrase(625 equals 5 'cubed')
 
 - name: function-power
   tag: power
@@ -263,7 +262,7 @@
   replace:
   - test:
       if: "$Verbosity!='Terse'"
-      then: [OT: "la"]      # phrase('the' third power of 2)
+      then: [ot: "la"]      # phrase('the' third power of 2)
   - bookmark: "*[2]/@id"
   - test:
       if: "*[2][self::m:mn][not(contains(., '.'))]"
@@ -280,18 +279,18 @@
   - "*[2][self::m:power or self::m:power or self::m:mrow[m:power]]"
   replace:
   - x: "*[1]"
-  - T: "elevato all'esponente"      # phrase(5 'raised to the exponent' x plus 1)
+  - t: "elevato all'esponente"      # phrase(5 'raised to the exponent' x plus 1)
   - pause: short
   - x: "*[2]"
   - pause: short
-  - T: "fine esponente"      # phrase(5 raised to the exponent x plus 1 'end exponent')
+  - t: "fine esponente"      # phrase(5 raised to the exponent x plus 1 'end exponent')
 
 - name: AfterPower-default
   tag: power
   match: "$ClearSpeak_Exponents = 'AfterPower'"
   replace:
   - x: "*[1]"
-  - T: "elevato alla"      # phrase(x is 'raised to the power' 4)
+  - T: "elevato alla potenza"      # phrase(x is 'raised to the power' 4)
   - x: "*[2]"
   - pause: short
 
@@ -316,7 +315,7 @@
   match: "*[2][self::m:mn][not(contains(., '.'))]"
   replace:
   - x: "*[1]"
-  - T: "alla"      # phrase(2 raised 'to the' power 7)
+  - T: "alla "      # phrase(2 raised 'to the' power 7)
   - test:
       if: "*[2][.>0]"
       then: [x: "ToOrdinal(*[2])"]
@@ -337,7 +336,7 @@
   - x: "*[2]"
   - test:
       if: "$ClearSpeak_Exponents != 'Ordinal'"
-      then: [T: "potenza"]      # phrase(2 raised to the 'potenza' 7)
+      then: [T: "power"]      # phrase(2 raised to the 'power' 7)
 
 - name: simple-var
   tag: power
@@ -345,8 +344,8 @@
   replace:
   - x: "*[1]"
   - T: "alla"      # phrase(3 raised 'to the' power 7)
-  - x: ToOrdinal("*[2]")
-  #- pronounce: [text: "-th", ipa: "θ", sapi5: "th", eloquence: "T"], not needed in ITA
+  - x: "*[2]"
+  - pronounce: [text: "-th", ipa: "θ", sapi5: "th", eloquence: "T"]
   - test:
       if: "$ClearSpeak_Exponents != 'Ordinal'"
       then: [T: "potenza"]      # phrase(2 raised to the 'power' 7)
@@ -453,7 +452,7 @@
   - "*[2][self::m:power or self::m:power or self::m:mrow[m:power]]"
   replace:
   - x: "*[1]"
-  - T: "elevato alla potenza"      # phrase(x is 'raised to the exponent')
+  - T: "elevato all'esponente"      # phrase(x is 'raised to the exponent')
   - pause: short
   - x: "*[2]"
   - pause: short
@@ -479,7 +478,7 @@
   replace:
   - test:
       if: "$Verbosity!='Terse'"
-      then: [OT: ""]      # phrase('the' absolute value of 25), leave placeholder
+      then: [ot: "il"]      # phrase('the' absolute value of 25)
   - x: "$WordToSay"
   - T: "di"      # phrase(the absolute value 'of' 25)
   - x: "*[1]"
@@ -497,18 +496,18 @@
   replace:
   - test:
     - if: "count(*)=0"
-      then: [T: "insieme vuoto"]      # phrase('the empty set')
+      then: [T: "l'insieme vuoto"]      # phrase('the empty set')
     - else_if: "count(*)=2"
       then:
       - test:
           if: "$Verbosity!='Terse'"
-          then: [T: ""]      # phrase('the' empty set)
+          then: [T: "l'"]      # phrase('the' empty set)
       - T: "insieme vuoto"      # phrase(the 'empty set')
     - else_if: "count(*[1]/*)=3 and *[1]/*[2][self::m:mo][.=':' or .='|' or .='∣']"
       then:
       - test:
           if: "$Verbosity!='Terse'"
-          then: [T: ""]      # phrase('the' set of all integers)
+          then: [T: "l'"]      # phrase('the' set of all integers)
       - T: "insieme di"      # phrase(this is a 'set of' numbers)
       - test:
           if: "$ClearSpeak_Sets != 'woAll'"
@@ -522,7 +521,7 @@
           then:
           - test:
               if: "$Verbosity!='Terse'"
-              then: [T: ""]      # phrase('the' set of integers)
+              then: [T: "l'"]      # phrase('the' set of integers)
           - T: "insieme"      # phrase(this is a 'set' of integers)
       - x: "*[1]"
 
@@ -537,9 +536,9 @@
   tag: [open-interval, open-closed-interval, closed-interval, closed-open-interval]
   match: "."
   replace:
-  - T: "intervallo da"      # phrase('the interval from' a to b)
+  - T: "l'intervallo da"      # phrase('the interval from' a to b)
   - x: "*[1]"
-  - T: "a"      # phrase(the interval from a 'to' b)
+  - T: "da"      # phrase(the interval from a 'to' b)
   - x: "*[2]"
   - pause: short
   - test:
@@ -547,8 +546,7 @@
       then:
       - test:
           if: "starts-with(name(.), 'open')"
-          then: [T: ""]      # phrase(the interval from a to b 'not' including b), leave the text blank for IT as we say 'Excluding'
-      - T: "escluso"      # phrase(the interval from a to b not 'including' b)
+          then: [T: "escluso"]      # phrase(the interval from a to b 'not' including b)
       - x: "*[1]"
     # logic to deal with [not] arg #1
   - test:
@@ -558,7 +556,7 @@
         then: [T: "o"]      # phrase(the interval including a 'or' b )
       - else_if: "name(.)='closed-interval'"
         then: [T: "e"]      # phrase(the interval including a 'and' b)
-        else: [T: "ma"]      # phrase(the interval including a 'but' not b)
+        else: [t: "ma"]      # phrase(the interval including a 'but' not b)
     # some ugly logic dealing with connectives: or, but, but, and (cleaner to be part of next clause?)
   - test:
       if: "not($is_intervals_end_infinity)"
@@ -569,10 +567,8 @@
           then:
           - test:
               if: "name(.) = 'open-interval' or name(.) = 'closed-open-interval'"
-              then: [T: ""]      # phrase(the interval 'not' including a), leave blank
-          - T: "escluso"      # phrase(the interval not 'including' a)
+              then: [T: "escluso"]      # phrase(the interval 'not' including a)
       - x: "*[2]"
-
     # onto the [not] [including]... part
 - name: binomial-frac-vector
   tag: matrix
@@ -612,7 +608,7 @@
   - bookmark: "@id"
   - test:
       if: "$Verbosity!='Terse' and not(IsNode(following-sibling::*[2],'simple'))"
-      then: [OT: ""]      # phrase('the' square root of 25)
+      then: [ot: "il"]      # phrase('the' square root of 25)
   - test:
     - if: ".='log'"
       then: [T: "logaritmo"]
@@ -634,35 +630,22 @@
       then:
       - x: "$LineCount"
       - test:
-        - if: "$LineCount = 1"
-          then:
-          - test:
-            - if: "($ClearSpeak_MultiLineLabel = 'Auto' and self::m:piecewise) or $ClearSpeak_MultiLineLabel = 'Case'"
-              then: [T: "caso"]      # phrase(this is the first 'case' of three cases)
-            - else_if: "$ClearSpeak_MultiLineLabel = 'Auto' or $ClearSpeak_MultiLineLabel = 'Line' or $ClearSpeak_MultiLineLabel = 'None'" # already dealt with Auto/Case
-              then: [T: "riga"]      # phrase(this is the first 'line' of three lines)
-            - else_if: "$ClearSpeak_MultiLineLabel = 'Constraint'"
-              then: [T: "vincolo"]      # phrase(this is the first 'constraint' of three constraints)
-            - else_if: "$ClearSpeak_MultiLineLabel = 'Equation'"
-              then: [T: "equazione"]      # phrase(this is the first 'equation' of three equations)
-            - else_if: "$ClearSpeak_MultiLineLabel = 'Row'"
-              then: [T: "riga"]      # phrase(this is the first 'row' of three rows)
-            - else_if: "$ClearSpeak_MultiLineLabel = 'Step'"
-              then: [T: "passaggio"]      # phrase(this is the first 'step' of three steps)
-          else: # Plurale (LineCount != 1)
-          - test:
-            - if: "($ClearSpeak_MultiLineLabel = 'Auto' and self::m:piecewise) or $ClearSpeak_MultiLineLabel = 'Case'"
-              then: [T: "casi"]
-            - else_if: "$ClearSpeak_MultiLineLabel = 'Auto' or $ClearSpeak_MultiLineLabel = 'Line' or $ClearSpeak_MultiLineLabel = 'None'"
-              then: [T: "righe"]
-            - else_if: "$ClearSpeak_MultiLineLabel = 'Constraint'"
-              then: [T: "vincoli"]
-            - else_if: "$ClearSpeak_MultiLineLabel = 'Equation'"
-              then: [T: "equazioni"]
-            - else_if: "$ClearSpeak_MultiLineLabel = 'Row'"
-              then: [T: "righe"]
-            - else_if: "$ClearSpeak_MultiLineLabel = 'Step'"
-              then: [T: "passaggi"]
+        - if: "($ClearSpeak_MultiLineLabel = 'Auto' and self::m:piecewise) or $ClearSpeak_MultiLineLabel = 'Case'"
+          then: [T: "caso"]      # phrase(this is the first 'case' of three cases)
+        - else_if: "$ClearSpeak_MultiLineLabel = 'Auto' or $ClearSpeak_MultiLineLabel = 'Line' or $ClearSpeak_MultiLineLabel = 'None'" # already dealt with Auto/Case
+          then: [T: "riga"]      # phrase(this is the first 'line' of three lines)
+        - else_if: "$ClearSpeak_MultiLineLabel = 'Constraint'"
+          then: [T: "vincolo"]      # phrase(this is the first 'constraint' of three constraints)
+        - else_if: "$ClearSpeak_MultiLineLabel = 'Equation'"
+          then: [T: "equazione"]      # phrase(this is the first 'equation' of three equations)
+        - else_if: "$ClearSpeak_MultiLineLabel = 'Row'"
+          then: [T: "riga"]      # phrase(this is the first 'row' of three rows)
+        - else_if: "$ClearSpeak_MultiLineLabel = 'Step'"
+          then: [T: "passaggio"]      # phrase(this is the first 'step' of three steps)
+          # else 'None -- don't say anything'
+      - test:
+        - if: "$LineCount != 1"
+          then: [ct: "i"] # plural      # phrase(shown by the letter 's')
       - pause: short
   - x: "*"
   - pause: long
@@ -684,7 +667,7 @@
         - else_if: "$ClearSpeak_MultiLineLabel = 'Constraint'"
           then: [T: "vincolo"]      # phrase(there is a 'constraint' on possible values)
         - else_if: "$ClearSpeak_MultiLineLabel = 'Equation'"
-          then: [T: "equazione"]      # phrase(the 'equation' pi r squared gives the area of a circle)
+          then: [t: "equation"]      # phrase(the 'equation' pi r squared gives the area of a circle)
         - else_if: "$ClearSpeak_MultiLineLabel = 'Row'"
           then: [T: "riga"]      # phrase(the values on the top 'row' are relevant)
         - else_if: "$ClearSpeak_MultiLineLabel = 'Step'"
@@ -714,7 +697,7 @@
   replace:
     test:
       if: "$ClearSpeak_ImpliedTimes = 'None'"
-      then: [T: ""]
+      then: [t: ""]
       else: [T: "per"]      # phrase(5 'times' 3 equals 15)
 
 - name: no-times
@@ -723,7 +706,7 @@
   # Note: this rule is also part of the paren rule so that the parens speak
   - ".='⁢' and $ClearSpeak_ImpliedTimes = 'None'"
   replace:
-  - T: ""
+  - t: ""
 
 - name: ClearSpeak-times
   tag: mo

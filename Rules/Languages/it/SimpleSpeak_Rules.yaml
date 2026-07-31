@@ -1,5 +1,20 @@
 ---
 
+- name: pause
+  tag: "!*"
+  match: "not(self::m:math) and not($MatchingPause) and @data-intent-property[contains(., ':pause')]"
+  replace:
+   - with:
+      variables: [MatchingPause: "true()"]
+      replace:
+      - test:
+        - if: "contains(@data-intent-property, ':pause-long')"
+          then: [pause: long]
+        - else_if: "contains(@data-intent-property, ':pause-short')"
+          then: [pause: short]
+          else: [pause: medium]
+      - x: "."
+
 - name: intent-literal-silent
   tag: [mi, mo, mn]
   match: "contains(@data-intent-property, ':silent:')"
@@ -20,7 +35,7 @@
   replace:
   - test:
       if: "$Verbosity!='Terse'"
-      then: [T: "la"]    # phrase('the' square root of x)
+      then: [T: ""]    #say nothing
   - T: "radice quadrata"      # phrase(the 'square root' of x)
   - test:
       if: "$Verbosity!='Terse'"
@@ -64,7 +79,7 @@
       if: "IsNode(*[1], 'leaf') or $Impairment != 'Blindness'"
       then: [pause: short]
       else: [T: "fine radice", pause: short]      # phrase(start the fifth root of x 'end of root')
-
+    
 # Fraction rules
 # Mixed numbers mostly "just work" because the invisible char reads as "and" and other parts read properly on their own
 - name: common-fraction
@@ -126,6 +141,18 @@
       then: [T: "fine frazione"]      # phrase(start 7 over 8 'end of fraction')
   - pause: medium
 
+- name: per-fraction
+  tag: fraction
+  match:
+  - "BaseNode(*[1])[contains(@data-intent-property, ':unit') or"
+  - "               ( self::m:mrow and count(*)=3 and"  # maybe a bit paranoid checking the structure...
+  - "                 *[1][self::m:mn] and *[2][.='\u2062'] and BaseNode(*[3])[contains(@data-intent-property, ':unit')] ) ] and"
+  - "BaseNode(*[2])[contains(@data-intent-property, ':unit')] "
+  replace:
+  - x: "*[1]"
+  - T: "al"      # phrase('5 meters 'per' second)
+  - x: "*[2]"
+
 # rules for functions raised to a power
 # these could have been written on 'mrow' but putting them on msup seems more specific
 # to see if it is a function, we look right to see if the following sibling is apply-function
@@ -185,7 +212,7 @@
   - T: "alla"      # phrase(15 raised 'to the' second power equals 225)
   - test:
       if: "*[2][.>0]"
-      then: {x: "ToOrdinal(*[2])"}
+      then: [x: "ToOrdinal(*[2])"]
       else: {x: "*[2]"}
 - name: simple-negative-integer
   tag: power
@@ -264,7 +291,7 @@
       then:
       - test:
           if: "$Verbosity!='Terse'"
-          then: [T: "l'"]      # phrase('the' set of all integers)
+          then: [T: ""]      # phrase('the' set of all integers)
       - T: "insieme di tutti gli"      # phrase(the 'set of all' positive integers less than 10)
       - x: "*[1]/*[1]"
       - T: "tale che"      # phrase(x 'such that' x is less than y)
@@ -272,7 +299,7 @@
       else:
       - test:
           if: "$Verbosity!='Terse'"
-          then: [T: "l'"]      # phrase('the' set of integers)
+          then: [T: ""]      # phrase('the' set of integers)
       - T: "insieme"      # phrase(here is a 'set' of numbers)
       - x: "*[1]"
 
@@ -280,17 +307,23 @@
   tag: mo
   match:
   # say "times" when invisible times is followed by parens or a superscript that has a base with parens or "|"s
+  # added: say times is the superscript is not simple
   # if we aren't sure if it is times or not, don't say anything
-  - "text()='⁢' and"
+  - ".='⁢' and"
   - "not(@data-function-guess) and ("
-  - "not(ancestor-or-self::*[contains(@data-intent-property, ':structure:')]) and "
+  - "not(ancestor-or-self::*[contains(@data-intent-property, ':literal:')]) and "
   - "  following-sibling::*[1]["
-  - "    IsBracketed(., '(', ')') or IsBracketed(., '[', ']') or IsBracketed(., '|', '|') or self::m:binomial or" # followed by parens
-  - "    ( (self::m:msup or self::m:msub or self::m:msubsup or self::m:power) and " # followed by msup, etc.
-  - "       *[1][self::m:mrow][IsBracketed(., '(', ')') or IsBracketed(., '[', ']') or IsBracketed(., '|', '|')]" # base has parens
-  - "    )"
-  - "  ]"
-  # other possibility is the preceding element has parens (but not the following)
+  - "    IsBracketed(., '(', ')') or IsBracketed(., '[', ']') or IsBracketed(., '|', '|') or "
+  - "    self::m:matrix or self::m:determinant or self::m:binomial or" # followed by parens
+  - "    self::m:square-root or self::m:msqrt or self::m:root or self::m:mroot or"
+  - "    (self::m:msub or self::m:msubsup or"
+  - "    ((self::m:msup or self::m:power) and not(IsNode(*[1], 'leaf') and *[2][self::m:mn and (.=2 or '.=3')]))) and " # followed by msup, etc.
+  - "     (*[1][self::m:mrow[IsBracketed(., '(', ')') or IsBracketed(., '[', ']') or IsBracketed(., '|', '|')] or "
+  - "           self::m:matrix or self::m:determinant] or" # base has parens
+  - "      not(IsNode(*[2], 'simple')) or "
+  - "      (self::m:msubsup and not(IsNode(*[3], 'simple')))"
+  - "     )"
+  - "  ]"  # other possibility is the preceding element has parens (but not the following)
   - " or "
   - "  preceding-sibling::*[1]["
   - "    IsBracketed(., '(', ')') or IsBracketed(., '[', ']') or IsBracketed(., '|', '|')]" # followed by parens
@@ -305,11 +338,13 @@
   - "          not(self::m:math) ] and "       # rule out [x] standing alone
   - "( IsBracketed(., '(', ')') or IsBracketed(., '[', ']') ) and "
   - "( IsNode(*[2], 'simple')  ) and"
-  - "not(ancestor-or-self::*[contains(@data-intent-property, ':structure:')])"
+  - "not(preceding-sibling::*[1][.='\u2062' and @data-function-guess]) and"
+  - "not(ancestor-or-self::*[contains(@data-intent-property, ':literal:')])"
   # missing clause: 'a positive fraction that is spoken as an ordinal
   #   (either by the Ordinal preference or by the default rules_'
   replace:
   - x: "*[2]"
+
 
 - include: "SharedRules/geometry.yaml"
 - include: "SharedRules/linear-algebra.yaml"
