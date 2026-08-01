@@ -473,7 +473,7 @@
  - "∨": [T: "logikai vagy"]                             	#  0x2228	(en: 'or', DeepL translation)
  - "∩": [T: "metszéspont"]                      	#  0x2229	(en: 'intersection', DeepL translation)
  - "∪": [T: "unió"]                             	#  0x222a	(en: 'union', DeepL translation)
- - "∫": [T: "integrál"]                         	#  0x222b	(en: 'integral', DeepL translation)
+ - "∫": [T: "integrált"]                         	#  0x222b	(en: 'integral', DeepL translation)
  - "∬": [T: "kettős integrál"]                  	#  0x222c	(en: 'double integral', DeepL translation)
  - "∭": [T: "hármas integrál"]                  	#  0x222d	(en: 'triple integral', DeepL translation)
  - "∮": [T: "kontúr integrál"]                  	#  0x222e	(en: 'contour integral', DeepL translation)

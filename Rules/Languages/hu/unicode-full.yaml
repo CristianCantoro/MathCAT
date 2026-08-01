@@ -18,7 +18,6 @@
         else: [T: "vonal"]                      	# 	(en: 'line', DeepL translation)
  - "²": [T: "kettő"]                            	#  0xb2	(en: 'two', DeepL translation)
  - "³": [T: "három"]                            	#  0xb3	(en: 'three', DeepL translation)
- - "´": [T: "éles ékezet"]                           	#  0xb4	(en: 'acute', DeepL translation)
  - "µ": [T: "mikro"]                            	#  0xb5	(en: 'micro', DeepL translation)
  - "¹": [T: "egy"]                              	#  0xb9	(en: 'one', DeepL translation)
  - "º": [T: "hímnemű ordinális jelző"]          	#  0xb9	(en: 'masculine ordinal indicator', DeepL translation)
@@ -35,7 +34,6 @@
             if: $ClearSpeak_MultSymbolX = 'By'
             then: [T: "szorozva"]                     	# 	(DeepL translation)
             else: [T: "kereszt"]                	# 	(en: 'cross', DeepL translation)
- - "÷": [T: "osztva"]                           	#  0xf7	(en: 'divided by', DeepL translation)
  - "¡": [T: "fordított felkiáltójel"]           	#  0xa1	(en: 'inverted exclamation mark', DeepL translation)
  - "¶": [T: "bekezdésjelző"]                   	#  0xb6	(en: 'paragraph mark', DeepL translation)
  - "¿": [T: "fordított kérdőjel"]               	#  0xbf	(en: 'inverted question mark', DeepL translation)
