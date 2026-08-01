@@ -1,10 +1,5 @@
 ---
- - "a": 
-    - test: 
-        if: "$TTS='none'"
-        then: [T: "a"]                         # long "a" sound in all speech engines I tested (espeak, MS SAPI, eloquence,
-        else: [SPELL: "'a'"]                         #    AWS Polly, ReadSpeaker, NaturalReader, google cloud, nuance, ibm watson)
- - "b-z": 
+ - "a-z": 
     - test: 
         if: "$TTS='none'"
         then: [T: "."]                          
@@ -16,30 +11,7 @@
  #   screen readers have options to use pitch changes or beeps instead of or in addition to say "cap"
  # Also, if a user can see the screen, they probably don't need to hear "cap", but if they specified an override, they must want to hear the override.
  # Some languages say the word for "uppercase" after the letter. Make sure to change that where appropriate by moving some code around
- - "A":
-    - test: 
-        if: "$CapitalLetters_Beep"
-        then:
-        - audio:
-            value: "beep.mp4"
-            replace: []
-    - test: 
-        if: "$CapitalLetters_UseWord"
-        then_test:
-          if: "$SpeechOverrides_CapitalLetters = ''"
-          then_test:
-            if: "$Impairment = 'Blindness'"
-            then: [T: "nagy"]
-          else: [x: "$SpeechOverrides_CapitalLetters"]
-    - pitch:
-        value: "$CapitalLetters_Pitch"
-        replace:
-        - test:
-            if: "$TTS='none'"
-            then: [T: "a"]
-            else: [SPELL: "'a'"]
-
- - "B-Z":
+  - "AB-Z":
     - test: 
         if: "$CapitalLetters_Beep"
         then:
@@ -57,7 +29,7 @@
     - pitch:
         value: "$CapitalLetters_Pitch"
         # note: processing of ranges converts '.' into the character, so it needs to be in quotes below
-        replace: [SPELL: "translate('.', 'BCDEFGHIJKLMNOPQRSTUVWXYZ', 'bcdefghijklmnopqrstuvwxyz')"]
+        replace: [SPELL: "translate('.', 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz')"]
 
  - "0-9": [T: "."]                              	# 	(en: '.', DeepL translation)
 

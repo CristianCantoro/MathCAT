@@ -1,6 +1,5 @@
 ---
 
-
  - "¢": [T: "centiméter"]                       	#  0xa2	(en: 'cents', DeepL translation)
  - "£": [T: "font"]                             	#  0xa3	(en: 'pounds', DeepL translation)
  - "¤": [T: "valuta jel"]                       	#  0xa4	(en: 'currency sign', DeepL translation)
