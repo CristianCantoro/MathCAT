@@ -211,7 +211,7 @@ pub fn set_mathml(mathml_str: impl AsRef<str>) -> Result<String> {
             if let Err(e) = new_package {
                 // Clear stale state so subsequent API calls do not return previous user's data (security issue)
                 old_package.replace(parser::parse("<math></math>").unwrap());
-                bail!("Invalid MathML input:\n{}\nError is: {}", &mathml_str, &e.to_string());
+                bail!("Invalid MathML input:\n{}\nError is: {}", mathml_str, e);
             }
 
             let new_package = new_package.unwrap();
@@ -1359,7 +1359,7 @@ mod tests {
                 <mrow> <mi>x</mi><mo>-</mo><mi>y</mi> </mrow>
             </mfrac>
         </math>";
-        set_mathml(&expr)?;
+        set_mathml(expr)?;
         let speech = get_spoken_text()?;
         // Rule-generated SSML must pass through verbatim (not XML-entity-encoded).
         assert!(!speech.contains("&lt;"));

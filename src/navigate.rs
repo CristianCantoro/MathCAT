@@ -417,7 +417,7 @@ pub fn do_navigate_command_string(mathml: Element, nav_command: &'static str) ->
                                 match tts.as_str() {
                                     "SSML"
                                         if !cumulative_speech.starts_with("<prosody rate") => {
-                                            cumulative_speech = format!("<prosody rate='{}%'>{}</prosody>", &rate, &cumulative_speech);
+                                            cumulative_speech = format!("<prosody rate='{}%'>{}</prosody>", rate, cumulative_speech);
                                         }
                                     "SAPI5"
                                         if !cumulative_speech.starts_with("<rate speed") => {
@@ -599,7 +599,7 @@ pub fn do_navigate_command_string(mathml: Element, nav_command: &'static str) ->
                         bail!("Internal error: With {}/{} in {} mode, can't {} from expression with id '{}' inside:\n{}",
                               rules.pref_manager.as_ref().borrow().pref_to_string("Language"),
                               rules.pref_manager.as_ref().borrow().pref_to_string("SpeechStyle"),
-                              &nav_state.mode, nav_command, &nav_position.current_node, mml_to_string(if literal_speak {mathml} else {intent}));
+                              nav_state.mode, nav_command, nav_position.current_node, mml_to_string(if literal_speak {mathml} else {intent}));
                     }
                     return Err(e);
                 }
@@ -1005,10 +1005,10 @@ mod tests {
             match do_navigate_command_string(mathml, command) {
                 Err(e) => {
                     panic!("\nStarting at '{}', '{} failed.\n{}",
-                                        start_id, command, &crate::interface::errors_to_string(&e))
+                                        start_id, command, crate::interface::errors_to_string(&e))
                 },
                 Ok(nav_speech) => {
-                    let nav_speech = nav_speech.trim_end_matches(&[' ', ',', ';']);
+                    let nav_speech = nav_speech.trim_end_matches([' ', ',', ';']);
                     // debug!("Full speech: {}", nav_speech);
                     if !result_id.is_empty() {
                         let (id, _) = nav_stack.borrow().get_navigation_mathml_id(mathml);
@@ -2601,7 +2601,7 @@ mod tests {
             assert_eq!("переход внутрь; в числитель; икс  плюс, квадратный корень из 1 разделить на игрек, конец корня", speech);
             match do_navigate_command_string(mathml, "DescribeCurrent") {
                 Ok(speech) => {
-                    let speech = speech.trim_end_matches(&[' ', ',', ';']).to_string();
+                    let speech = speech.trim_end_matches([' ', ',', ';']).to_string();
                     assert_eq!("описать текущее; икс  плюс, квадратный корень из 1 разделить на игрек", speech);
                 },
                 Err(e) => {
