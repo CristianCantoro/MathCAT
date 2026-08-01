@@ -214,7 +214,7 @@
  - "⅞": [t: "#N⠛N⠦"]          # 0x215E (Vulgar Fraction Seven Eighths)
  - "↉": [t: "#N⠚N⠒"]          # 0x2189 (Vulgar Fraction Zero Thirds)
 
- - "̊ ": [t: "⠈⠴"]               # 0x0309 (Ring)
+ - "̊": [t: "⠈⠴"]               # 0x030A (Ring)
  - "ˇ": [t: "⠰⠒"]               # 0x02C7 (Caron)
  - "⌢": [T: "⠈⠒"]             #  0x2322
  - "⌣": [T: "⠠⠒"]           	#  0x2323
@@ -230,8 +230,6 @@
  - "⤻": [t: "⠠⠱"]                # 0x293B (vector axial positivo)
  - "↷": [t: "⠈⠜"]                # 0x21B7 (vector axial negativo)
 
- - "#": [t: "⠸⠇⠶"]                # 0x0023 (es paralelo e igual a)
  - "∾": [t: "⠰⠢⠆"]                # 0x223E (homólogo a/semejante a)
- - "~": [t: "⠐⠢⠄"]                # 0x007E (equivale a/similar a)
  - "⌅": [t: "⠸⠫"]                # 0x2305 (proyectividad)
  - "⌆": [t: "⠸⠻"]                # 0x2306 (perspectividad)

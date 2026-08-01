@@ -10,7 +10,6 @@
  - "¨": [T: "trema"]                          #  0xa8    (en: 'double dot', MathPlayer: 'trema', google: 'dubbel prick') 
  - "©": [T: "opphavsrett"]                            #  0xa9    (en: 'copyright')
  - "ª": [T: "feminin ordenstallindikator"]           #  0xaa    (en: 'feminine ordinal indicator', MathPlayer: 'feminine ordinal indicator', google: 'feminin ordinär indikator')
- - "¬": [T: "ikke"]                                 #  0xac    (en: 'not')
  - "«": [T: "venstre sitattegn"]    #  0xab    (en: 'left-pointing double angle quote mark')
  - "¯":                                             #  0xaf
      - test:
@@ -19,24 +18,9 @@
         else: [T: "strek"]                         #     (en: 'line')
  - "²": [T: "i andre"]                              #  0xb2    (en: 'two', MathPlayer: 'exponent två', google: 'två')
  - "³": [T: "i tredje"]                                #  0xb3    (en: 'three', MathPlayer: 'exponent tre', google: 'tre')
- - "´": [T: "akutt aksent"]                          #  0xb4    (en: 'acute')
  - "µ": [T: "mikro"]                          #  0xb5    (en: 'micro')
  - "¹": [T: "eksponent én"]                         #  0xb9    (en: 'one', google: 'ett')
  - "º": [T: "maskulin ordenstallindikator"]          #  0xba    (en: 'masculine ordinal indicator', MathPlayer: 'masculine ordinal indicator', google: 'maskulina ordinära indikatorer')
- - "·":
-    - test:
-        if: "$SpeechStyle != 'ClearSpeak' or $ClearSpeak_MultSymbolDot = 'Auto'"
-        then: [T: "ganger"]                          #     (en: 'times', google translation)
-        else: [T: "midtstilt prikk"]                  #     (en: 'dot', MathPlayer: 'mellanpunkt', google: 'punkt')
- - "×":                                             #  0xd7
-    - test:
-        if: "$SpeechStyle != 'ClearSpeak' or $ClearSpeak_MultSymbolX = 'Auto'"
-        then: [T: "ganger"]                          #     (en: 'times', google translation)
-        else_test:
-            if: $ClearSpeak_MultSymbolX = 'By'
-            then: [T: "ganger"]                      #     (en: 'by', google translation)
-            else: [T: "kryss"]                     #     (en: 'cross')
- - "÷": [T: "delt på"]                             #  0xf7    (en: 'divided by')
  - "¡": [T: "omvendt utropstegn"]           # 0xa1
  - "¶": [T: "paragraftegn"]                      # 0xb6
  - "¿": [T: "omvendt spørsmålstegn"]              # 0xbf
@@ -146,14 +130,6 @@
  #---------------------------------------------------------------------------------------------------------
  #Combining Diacritical Marks 
  #Ordinary diacritics OK
- - "̀": [T: "grav aksent"]                   #  0x300    (en: 'grave accent embellishment', google: 'allvarlig accentutsmyckning')
- - "́": [T: "akutt aksent"]               #  0x301    (en: 'acute accent embellishment', google: 'akut accentutsmyckning')
- - "̂": [T: "cirkumfleks"]                    #  0x302    (en: 'circumflex accent embellishment', google: 'circumflex accent utsmyckning')
- - "̃": [T: "tilde"]                  #  0x303    (google: 'tilde utsmyckning')
- - "̄": [T: "makron"]                    #  0x304    (en: 'macron embellishment', google: 'macron -utsmyckning')
- - "̅": [T: "strek"]                #  0x305    (google: 'överbar utsmyckning')
- - "̆": [T: "breve"]                    #  0x306    (en: 'breve embellishment', google: 'breve utsmyckning')
- - "̇": [T: "prikk"]              #  0x307    (google: 'prick ovanför utsmyckning')
  - "̈": [T: "trema"]                     #  0x308    (en: 'diaeresis embellishment', google: 'diaeresis utsmyckning')
  - "̉": [T: "krok"]             #  0x309    (en: 'hook above embellishment', google translation)
  - "̊": [T: "ring"]                 #  0x30a    (en: 'ring above embellishment', google: 'ring över utsmyckning')
@@ -248,15 +224,9 @@
  - "ϒ": [T: "ypsilon med krok"]       #  0x3d2    (en: 'upsilon with hook', google: 'upsilon med krok')
  - "ϓ": [T: "ypsilon med akutt aksent og krok"]            #  0x3d3    (en: 'upsilon with acute and hook', google translation)
  - "ϔ": [T: "ypsilon med trema og krok"]         #  0x3d4    (en: 'upsilon with diaeresis and hook', google translation)
- - "ϕ": [T: "fi"]                         #  0x3d5    (en: 'phi', google: 'phi')
- - "ϖ": [T: "pi"]                     #  0x3d6    (en: 'pi', google: 'pi')
  - "ϗ": [T: "kai"]                    #  0x3d7    (en: 'kai')
  - "Ϙ": [T: "stor arkaisk koppa"]                   # 0x3d8
  - "ϙ": [T: "arkaisk koppa"]                       # 0x3d9
- - "ϵ": [T: "epsilon"]                              #  0x3f5
- - "϶": [T: "omvendt epsilon"]                      #  0x3f6    (en: 'reversed epsilon')
- #-----------------------------------------------------------------------------------------------------------------
- #Cyrillic OK
  - "А-Я":                                           #  0x410 - 0x42f
     - test: 
         if: "$CapitalLetters_Beep"
@@ -329,19 +299,6 @@
         if: "@data-chem-formula-op"
         then: [T: "ganger"]                          #     (en: 'dot', google translation)
         else: [T: "listeelement"]                      #     (en: 'bullet')
-
- - "…":                                             #  0x2026
-    test:
-        if:
-            - "$SpeechStyle != 'ClearSpeak' or $ClearSpeak_Ellipses = 'Auto' or"
-               # must be ClearSpeak and $ClearSpeak_Ellipses = 'AndSoOn'
-               # speak '…' as 'and so on...' unless expr starts with '…'
-            - "../*[1][.='…']"
-        then: [T: "prikk prikk prikk"]              #     (en: 'dot dot dot', google translation)
-        else_test:                                  #  must have $ClearSpeak_Ellipses = 'AndSoOn'
-            if: "count(following-sibling::*) = 0"
-            then: [T: "og så videre"]              #     (en: 'and so on', google translation)
-            else: [T: "og så videre opp til"]          #     (en: 'and so on up to')
 
  - "‰": [T: "promille"]                             #  0x2030    (en: 'per mille', MathPlayer: 'promilletecken')
  - "‱": [T: "per titusen"]                      #  0x2031    (en: 'per ten thousand')
@@ -508,14 +465,12 @@
     - T: "script font"                                 #     (en: 'script')
     - SPELL: "translate('.', 'ℐℒ℘ℬℰℱℳ', 'ILPBEFM')"
 
- - "ℓ": [T: "script font l"]                             #  0x2113    (en: 'script l')
  - "℔": [T: "pund"]                           #  0x2114    (en: 'pounds', google: 'pund')
  - "№": [T: "numero"]                        #  0x2116    (en: 'number')
  - "℥": [T: "ounce"]                           #  0x2125    (en: 'ounces')
  - "Ω": [T: "ohm"]                                  #  0x2126    (en: 'ohms')
  - "℧": [T: "mho"]                           #  0x2127    (en: 'mhos')
  - "℩": [T: "rotert iota"]                         #  0x2129    (en: 'turned iota', google: 'vände iota')
- - "K": [T: "grader kelvin"]                        #  0x212a    (en: 'kelvin')
  - "Å": [T: "ångstrøm"]                            #  0x212b
  - "ℯ": [T: "script font e"]                             #  0x212f    (en: 'script e')
 
@@ -600,7 +555,6 @@
  #Arrows OK
  - "←": [T: "venstrepil"]                       #  0x2190    (en: 'leftwards arrow')
  - "↑": [T: "oppoverpil"]                            #  0x2191    (en: 'upwards arrow')
- - "→": [T: "høyrepil"]                         #  0x2192    (en: 'rightwards arrow')
  - "↓": [T: "nedoverpil"]                            #  0x2193    (en: 'downwards arrow')
  - "↔": [T: "venstre-høyre-pil"]                    #  0x2194    (en: 'left right arrow')
  - "↕": [T: "opp-ned-pil"]                    #  0x2195    (en: 'up down arrow')
@@ -725,86 +679,10 @@
  - "∀": [T: "for alle"]                             #  0x2200    (en: 'for all')
  - "∁":                                             #  0x2201   # audit-ignore
      - T: "komplementet til"                              #     (en: 'complement of')
- - "∂":                                             #  0x2202   # audit-ignore
-     - T: "partiell derivert"
  - "∃": [T: "det eksisterer"]                        #  0x2203    (en: 'there exists')
  - "∄": [T: "det eksisterer ikke"]                   #  0x2204    (en: 'there does not exist')
  - "∅": [T: "den tomme mengden"]                        #  0x2205    (en: 'empty set')
- - "∆":                                          #  0x2206                          
-     - test: 
-        if: "following-sibling::*"
-        then: [T: "laplas av"]        #  (en: 'laplacian of') # Norwegian: "laplace" is not pronounced correctly
-        else: [T: "laplas"]
  - "∇": [T: "nabla"]                     # 0x2207 (en: 'gradient of', google: 'lutning av')
- - "∈":                                          #  0x2208
-    - test:
-        if: "$SpeechStyle != 'ClearSpeak'"
-        then:
-        - T: "i"
-        # Several options for speaking elements in ClearSpeak -- they split between being inside a set or not and then the option
-        # NORWEGIAN: "i" sounds best in all cases for the non-ClearSpeak case
-        # SWEDISH/NORWEGIAN: The word "medlem" is not commonly used in set theory, so we removed that rule. If the parsing has set the parameter to "Member" it will fall under the "else" case.
-        else_test:
-            if: "../../self::m:set or ../../../self::m:set" #  inside a set
-            then_test:
-              - if: $ClearSpeak_SetMemberSymbol = 'Auto' or $ClearSpeak_SetMemberSymbol = 'In'
-                then: [T: "i"]                   #  (en: 'in', google translation)
-              - else_if: $ClearSpeak_SetMemberSymbol = 'Element'
-                then: [T: "element i"]          #  (en: 'element of', google translation)
-              - else: [T: "tilhørende"]             #  $ClearSpeak_SetMemberSymbol = 'Belongs' (en: 'belonging to')
-            else_test:
-              - if: $ClearSpeak_SetMemberSymbol = 'Auto' or $ClearSpeak_SetMemberSymbol = 'In'
-                then: [T: "i"] # NORWEGIAN: Set the "auto" case to be "i"
-              - else_if: $ClearSpeak_SetMemberSymbol = 'Element'
-                then: [T: "er et element i"]                #  (en: 'is in', google translation)
-              - else: [T: "tilhører"]             #  $ClearSpeak_SetMemberSymbol = 'Belongs' (en: 'belongs to')
- - "∉":                                          #  0x2209      # audit-ignore
-    # rule is identical to 0x2208
-     - test:
-        if: "$SpeechStyle != 'ClearSpeak'"
-        then:
-        - test:
-            if: "not(ancestor::*[self::m:set])"    # "the set x is an element of ..." sounds bad"
-            then: [T: "er"]
-        - T: "ikke et element i"
-        # Several options for speaking elements in ClearSpeak -- they split between being inside a set or not and then the option
-        # SWEDISH/NORWEGIAN: The word "medlem" is not commonly used in set theory, so we removed that rule. If the parsing has set the parameter to "Member" it will fall under the "else" case.
-        else_test:
-            if: "../../self::m:set or ../../../self::m:set" #  inside a set
-            then_test:
-              - if: $ClearSpeak_SetMemberSymbol = 'Auto' or $ClearSpeak_SetMemberSymbol = 'In'
-                then: [T: "ikke i"]              #  (en: 'not in', google translation)
-              - else_if: $ClearSpeak_SetMemberSymbol = 'Element'
-                then: [T: "ikke element i"]     #  (en: 'not element of', google translation)
-              - else: [T: "ikke tilhørende"]        #  $ClearSpeak_SetMemberSymbol = 'Belongs' (en: 'not belonging to')
-            else_test:
-              - if: $ClearSpeak_SetMemberSymbol = 'Auto' or $ClearSpeak_SetMemberSymbol = 'Element'
-                then: [T: "er ikke et element i"]    #  (en: 'is not an element of', google translation)
-              - else_if: $ClearSpeak_SetMemberSymbol = 'In'
-                then: [T: "er ikke i"]           #  (en: 'is not in', google translation)
-              - else: [T: "tilhører ikke"]        #  $ClearSpeak_SetMemberSymbol = 'Belongs' (en: 'does not belong to')
- - "∊":                                          #  0x220a      # audit-ignore
-   - test:
-        if: "$SpeechStyle != 'ClearSpeak'"
-        then:
-        - T: "i"
-        # Several options for speaking elements in ClearSpeak -- they split between being inside a set or not and then the option
-        # NORWEGIAN: "i" sounds best in all cases for the non-ClearSpeak case
-        # SWEDISH/NORWEGIAN: The word "medlem" is not commonly used in set theory, so we removed that rule. If the parsing has set the parameter to "Member" it will fall under the "else" case.
-        else_test:
-            if: "../../self::m:set or ../../../self::m:set" #  inside a set
-            then_test:
-              - if: $ClearSpeak_SetMemberSymbol = 'Auto' or $ClearSpeak_SetMemberSymbol = 'In'
-                then: [T: "i"]                   #  (en: 'in', google translation)
-              - else_if: $ClearSpeak_SetMemberSymbol = 'Element'
-                then: [T: "element i"]          #  (en: 'element of', google translation)
-              - else: [T: "tilhørende"]             #  $ClearSpeak_SetMemberSymbol = 'Belongs' (en: 'belonging to')
-            else_test:
-              - if: $ClearSpeak_SetMemberSymbol = 'Auto' or $ClearSpeak_SetMemberSymbol = 'In'
-                then: [T: "i"]         #  (en: 'is an element of', google translation) #NORWEGIAN: Set the "auto" case to be "i"
-              - else_if: $ClearSpeak_SetMemberSymbol = 'Element'
-                then: [T: "er et element i"]                #  (en: 'is in', google translation)
-              - else: [T: "tilhører"]             #  $ClearSpeak_SetMemberSymbol = 'Belongs' (en: 'belongs to')
  - "∋": [T: "inneholder elementet"]               #  0x220b    (en: 'contains the member')
  - "∌": [T: "inneholder ikke elementet"]          #  0x220c    (en: 'does not contain the member')
  - "∍": [T: "inneholder elementet"]               #  0x220d    (en: 'contains the member')
@@ -825,17 +703,10 @@
         then: [T: "ganger"]                          #     (en: 'dot', google translation)
         else: [T: "ganger"]          #     (en: 'times')
 
- - "√":                                             #  0x221a       # audit-ignore
-     - T: "kvadratroten av"                                 #     (en: 'square root of')
  - "∛":                                             #  0x221b       # audit-ignore
      - T: "kubikkroten av"                                #     (en: 'cube root of')
  - "∜":                                             #  0x221c       # audit-ignore
      - T: "fjerderoten av"                               #     (en: 'fourth root of')
- - "∝":                                             #  0x221d
-     - test: 
-         if: "$Verbosity!='Terse'"
-         then: [T: "er"]                            #     (en: 'is', google translation)
-     - T: "proporsjonal med"                       #     (en: 'proportional to')
  - "∞": [T: "uendelig"]                           #  0x221e    (en: 'infinity')
  - "∟": [T: "rett vinkel"]                         #  0x221f    (en: 'right angle')
  - "∠": [T: "vinkel"]                               #  0x2220    (en: 'angle')
@@ -873,11 +744,6 @@
          if: "$Verbosity!='Terse'"
          then: [T: "er"]                            #     (en: 'is', google translation)
      - T: "homotetisk til"                              #     (en: 'homothetic to', MathPlayer: 'homothetic', google: 'homotetisk till')
- - "∼":                        #  0x223c    (en: 'varies with')     # audit-ignore
-     - test: 
-        if: "$Verbosity!='Terse'"
-        then: [T: "er"]
-     - T: "proporsjonal med"
  - "∽": [T: "omvendt tilde"]                        #  0x223d    (en: 'reversed tilde')
  - "∾":                                             #  0x223e       # audit-ignore
      - T: "omvendt langstrakt s"                     #     (en: 'most positive', MathPlayer: 'inverted lazy s', google: 'mest positiva')
@@ -969,17 +835,6 @@
  - "≞":                                             #  0x225e       # audit-ignore
      - T: "måles med"                                #     (en: 'measured by')
  - "≟": [T: "spørsmål ved likhet"]                  #  0x225f    (en: 'has an unknown relationship with')
- - "≠":                                             #  0x2260
-     - test: 
-        if: "$Verbosity!='Terse'"
-        then: [T: "er"]
-     - T: "ikke lik"                           #     (en: 'not equal to')
- - "≡":                                             #  0x2261
- # SWEDISH: This symbol can mean different things. Can MathML differ between them? If so, build a test?
-     - test: 
-         if: "$Verbosity!='Terse'"
-         then: [T: "er"]                            #     (en: 'is', google translation)
-     - T: "identisk med"                            #     (en: 'identical to')
  - "≢":                                             #  0x2262
      - test: 
          if: "$Verbosity!='Terse'"
@@ -990,16 +845,6 @@
          if: "$Verbosity!='Terse'"
          then: [T: "er"]                            #     (en: 'is', google translation)
      - T: "strengt ekvivalent med"                    #     (en: 'strictly equivalent to')
- - "≦":                                           #  0x2266    (en: 'less than over equal to')      # audit-ignore
-     - test: 
-         if: "$Verbosity!='Terse'"
-         then: [T: "er"] 
-     - T: "mindre enn eller lik"
- - "≧":                                   #  0x2267    (en: 'greater than over equal to')       # audit-ignore
-     - test: 
-         if: "$Verbosity!='Terse'"
-         then: [T: "er"]
-     - T: "større enn eller lik"
  - "≨":                                             #  0x2268
      - test: 
          if: "$Verbosity!='Terse'"
@@ -1098,36 +943,6 @@
  - "≿": [T: "følger eller er ekvivalent med"]    #  0x227f    (en: 'succeeds or is equivalent to')
  - "⊀": [T: "foregår ikke"]                     #  0x2280    (en: 'does not precede')
  - "⊁": [T: "følger ikke"]                    #  0x2281    (en: 'does not succeed')
- - "⊂":                                             #  0x2282
-     - test: 
-         if: "$Verbosity!='Terse'"
-         then: [T: "er en"]                         #     (en: 'is a', google translation)
-     - T: "ekte delmengde av"                        #     (en: 'subset of')
- - "⊃":                                             #  0x2283
-     - test: 
-         if: "$Verbosity!='Terse'"
-         then: [T: "er en"]                         #     (en: 'is a', google translation)
-     - T: "ekte overmengde av"                        #     (en: 'superset of')
- - "⊄":                                             #  0x2284
-     - test: 
-         if: "$Verbosity!='Terse'"
-         then: [T: "er"]                            #     (en: 'is', google translation)
-     - T: "ikke en ekte delmengde av"                     #     (en: 'not a subset of')
- - "⊅":                                             #  0x2285
-     - test: 
-         if: "$Verbosity!='Terse'"
-         then: [T: "er"]                            #     (en: 'is', google translation)
-     - T: "ikke en ekte overmengde av"                     #     (en: 'not a superset of')
- - "⊆":                                             #  0x2286
-     - test: 
-         if: "$Verbosity!='Terse'"
-         then: [T: "er en"]                         #     (en: 'is a', google translation)
-     - T: "delmengde av"                             #     (en: 'subset of or equal to')
- - "⊇":                                             #  0x2287
-     - test: 
-         if: "$Verbosity!='Terse'"
-         then: [T: "er en"]                         #     (en: 'is a', google translation)
-     - T: "overmengde av"                             #     (en: 'superset of or equal to')
  - "⊈":                                             #  0x2288
      - test: 
          if: "$Verbosity!='Terse'"
@@ -3114,11 +2929,8 @@
  - "": [T: "digamma"]                              #  0xed03    (google translation)
  - "ϝ": [T: "digamma"]                              #  0x3dd
  - "": [t: ""]                                    #  0xed10    (en: 'd', google translation)
- - "ⅆ": [T: "d"]                                    #  0x2146
  - "": [t: ""]                                    #  0xed11    (en: 'e', google translation)
- - "ⅇ": [T: "e"]                                    #  0x2147
  - "": [t: ""]                                    #  0xed12    (en: 'i', google translation)
- - "ⅈ": [T: "i"]                                    #  0x2148
  - "": [T: ""]                                    #  0xed13    (en: 'j', google translation)
  - "ⅅ":
     - SPELL: "translate('.', 'ⅅ', 'DD')"           #  0xed16, 0x2145
