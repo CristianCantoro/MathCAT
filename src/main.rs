@@ -193,9 +193,10 @@ fn main() {
   //   </math>";
 
   let expr = r#"
-<math> <mn>1</mn> <mi>kg</mi> <msup> <mi intent=':unit'>sec</mi> <mrow><mo>−</mo><mn>1</mn></mrow> </msup> <msup> <mi intent='unit'>m</mi> <mrow><mo>−</mo><mn>1</mn></mrow> </msup> </math>
-
-         "#;
+<math>
+    <mn data-from-mathml='mn' id='ID.0214'>𝟢</mn>
+    </math>
+ "#;
   // let instant = Instant::now();
 
   // let rules_dir = "".to_string();    // Use MathCATRulesDir, potentially pointing to a zipped version
@@ -235,39 +236,44 @@ fn main() {
     eprintln!("Error: exiting -- {}", errors_to_string(&e)); exit(1); 
   };
 
-  // match do_navigate_command("ZoomIn".to_string())  {
-  //   Err(e) => eprintln!("Error: exiting -- {}", errors_to_string(&e)); exit(1);,
-  //   Ok(speech) => info!("\nZoomIn speech: '{speech}'"),
-  // }
-  // match do_navigate_command("ToggleZoomLockUp".to_string()) {
+  match do_navigate_command("ZoomIn")  {
+    Err(e) => {eprintln!("Error: exiting -- {}", errors_to_string(&e)); exit(1);},
+    Ok(speech) => info!("\nZoomIn speech: '{speech}'"),
+  }
+  match do_navigate_command("ZoomIn")  {
+    Err(e) => {eprintln!("Error: exiting -- {}", errors_to_string(&e)); exit(1);},
+    Ok(speech) => info!("\nZoomIn speech: '{speech}'"),
+  }
+  info!("\n");
+  // match do_navigate_command("ToggleZoomLockUp") {
   //   Err(e) => eprintln!("Error: exiting -- {}", errors_to_string(&e)); exit(1);,
   //   Ok(speech) => info!("ToggleZoomLockUp speech: '{speech}'"),
   // }
-  // match do_navigate_command("MovePrevious".to_string()) {
+  // match do_navigate_command("MovePrevious") {
   //   Err(e) => eprintln!("Error: exiting -- {}", errors_to_string(&e)); exit(1);,
   //   Ok(speech) => info!("MovePrevious speech: '{speech}'"),
   // }
-  // match do_navigate_command("MovePrevious".to_string()) {
+  // match do_navigate_command("MovePrevious") {
   //   Err(e) => eprintln!("Error: exiting -- {}", errors_to_string(&e)); exit(1);,
   //   Ok(speech) => info!("MovePrevious speech: '{}'", speech),
   // }
-  // match do_navigate_command("MovePrevious".to_string()) {
+  // match do_navigate_command("MovePrevious") {
   //   Err(e) => eprintln!("Error: exiting -- {}", errors_to_string(&e)); exit(1);,
   //   Ok(speech) => info!("MovePrevious speech: '{}'", speech),
   // }
-  // match do_navigate_command("MoveNext".to_string()) {
+  // match do_navigate_command("MoveNext") {
   //   Err(e) => eprintln!("Error: exiting -- {}", errors_to_string(&e)); exit(1);,
   //   Ok(speech) => info!("MoveNext speech: '{}'", speech),
   // }
-  // match do_navigate_command("MoveNext".to_string()) {
+  // match do_navigate_command("MoveNext") {
   //   Err(e) => eprintln!("Error: exiting -- {}", errors_to_string(&e)); exit(1);,
   //   Ok(speech) => info!("MoveNext speech: '{}'", speech),
   // }
-  // match do_navigate_command("MoveNext".to_string()) {
+  // match do_navigate_command("MoveNext") {
   //   Err(e) => eprintln!("Error: exiting -- {}", errors_to_string(&e)); exit(1);,
   //   Ok(speech) => info!("MoveNext speech: '{}'", speech),
   // }
-  // match do_navigate_command("MoveNext".to_string()) {
+  // match do_navigate_command("MoveNext") {
   //   Err(e) => eprintln!("Error: exiting -- {}", errors_to_string(&e)); exit(1);,
   //   Ok(speech) => info!("MoveNext speech: '{}'", speech),
   // }
