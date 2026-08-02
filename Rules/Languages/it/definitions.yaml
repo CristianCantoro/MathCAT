@@ -251,6 +251,7 @@
 - CurrencySymbols: {
     "$": "dollar", "¢": "cent", "€": "euro", "£": "pound", "₡": "colón", "₤": "lira", "₨": "rupee",
     "₩": "won", "₪": "shekel", "₱": "peso", "₹": "rupia", "₺": "lira", "₿": "bitcoin",
+  }
 
 - PluralForms: {
   # FIX: this needs to be flushed out

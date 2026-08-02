@@ -643,21 +643,35 @@
 - name: diagonal-matrix
   tag: matrix
   # select all the non-zero entries...if they are not on the diagonal
-  #    if there are any of them, then this isn't an identity matrix
+  #   if there are any of them, then this isn't an identity matrix
   match:
   - "count(*) = count(*[1]/*) and "
-  - "not( */*/*[not(self::m:mn and .= 0)][count(../preceding-sibling::*)!=count(../../preceding-sibling::*)] )"
+  - "not( */*/*[not(self::m:mn and .= 0)]"
+  - "          [count(../preceding-sibling::*)!=count(../../preceding-sibling::*)]"
+  - "    )"
   replace:
-  # ... tutto il resto rimane identico
+  - t: "the"      # phrase('the' 1 by 2 matrix)
+  - x: count(*)
+  - t: "by"       # phrase(the 1 'by' 2 matrix)
+  - x: count(*[self::m:mtr][1]/*)
+  - t: "diagonal matrix"   # phrase(the 2 by 2 'diagonal matrix')
+  - pause: long
+  - insert:
+      # this lists the diagonal 'mtd's to be read, and they say "column nnn" before reading the contents
+      # there seems to be an xpath bug -- without the parens, the match fails for the
+      #   test Languages::en::mtable::diagonal_matrix due to match failure (the third matching element seems to be missing)
+      nodes: "(*/*/*[not(self::m:mn and .= 0)]/..)"
+      replace: [pause: auto]
+  - pause: long
 
 - name: 2-or-3x1-matrix
   tag: matrix
   variables: [IsColumnSilent: true()]
   match:
-  - "$ClearSpeak_Matrix != 'SpeakColNum'"
-  - "*[self::m:mtr][count(*) = 1]"
-  - "count(*) = 2 or count(*) = 3"
-  - "IsNode(*/*/*,'simple')"
+  - "$ClearSpeak_Matrix != 'SpeakColNum' and " # "simple" isn't used for this preference
+  - "*[self::m:mtr][count(*) = 1] and " # one column
+  - count(*)<=3 and # at least two rows
+  - IsNode(*/*/*,'simple') # IsNode() returns true if all the nodes are simple
   replace:
   - test:
       if: "$ClearSpeak_Matrix = 'Vector' or $ClearSpeak_Matrix = 'EndVector'"
