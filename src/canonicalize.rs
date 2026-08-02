@@ -969,7 +969,11 @@ impl CanonicalizeContext {
 								return Some(result);
 							}
 						},
-						"..." => {mathml.set_text("…");},  // name might need to change -- checked below
+						"..." => {
+							if name(get_parent(mathml)) != "mover" {
+								mathml.set_text("…");
+							}  // name might need to change -- checked below
+						},
 						":" => {
 							if is_ratio(mathml) {
 								mathml.set_text("∶");	// ratio U+2236
@@ -1865,7 +1869,7 @@ impl CanonicalizeContext {
 			// if roman numeral is in superscript and we get here, then it had a chemical element base, so we accept it
 			// note: you never has a state = I; if two letters, it must be 'II'.
 			if text.len() > 2  || 
-			   ((name(parent) =="msup" || name(parent) == "mmultiscripts") && text.len()==2 && text == *b"II") {
+			   ((name(parent) =="msup" || name(parent) == "mmultiscripts") && text.len()==2 && text==*b"II") {
 				return true;
 			} else {
 				let is_upper_case = text[0].is_ascii_uppercase();	// safe since we know it is a roman numeral
@@ -2362,6 +2366,24 @@ impl CanonicalizeContext {
 			// If surrounded by fences, and commas are used, leave as is (e.g, "{1,234}")
 			if !text.contains(',') {
 				return true;		// not comma separated
+			}
+
+			// Comma-separated short values in subscripts are almost always index lists (e.g. D_{1,3}).
+			// Longer groups (e.g. 1,234) are thousands/decimals and should still merge.
+			// FIX: this could be extended to mmultiscripts, but that's a lot of work for little gain.
+			// parent_mrow may be <math> (no parent) when merge_number_blocks runs on the root.
+			if let Some(container) = mrow.parent().and_then(|n| n.element()) {
+				let container_name = name(container);
+				if matches!(container_name, "msub" | "msubsup")
+					&& mrow.preceding_siblings().len() == 1
+					&& text.split(',')
+						.all(|part| {
+							let digits = part.chars().filter(|c| c.is_ascii_digit()).count();
+							digits > 0 && digits <= 2
+						})
+				{
+					return false;
+				}
 			}
 
 			// We have already checked for whitespace as separators, so it must be a comma. Just check the fences.
@@ -3054,9 +3076,7 @@ impl CanonicalizeContext {
 				return Ok( mathml );
 			},
 			"mn" => {
-				if mathml.attribute_value(CHANGED_ATTR) != Some(ADDED_ATTR_VALUE) && !as_text(mathml).contains('.') {
-					self.canonicalize_plane1(mathml);
-				}
+				self.canonicalize_plane1(mathml);
 				return Ok( mathml );
 			},
 			"mrow" => {
@@ -6933,6 +6953,24 @@ mod canonicalize_tests {
 			</mrow>
 		</math>"#;
         are_strs_canonically_equal_result(test_str, target_str, &[])
+	}
+
+	#[test]
+	fn subscript_short_comma_list_not_merged_but_thousands_are() -> Result<()> {
+		// With comma as decimal separator, short subscript lists like D_{1,3} are indexes, not decimals.
+		let test_str = "<math><msub><mi>D</mi><mrow><mn>1</mn><mo>,</mo><mn>3</mn></mrow></msub></math>";
+		let target_str = "<math><msub><mi>D</mi><mrow><mn>1</mn><mo>,</mo><mn>3</mn></mrow></msub></math>";
+		are_strs_canonically_equal_with_locale(test_str, target_str, &[], ".", ",")?;
+
+		// Longer groups in a subscript are still merged (thousands / long decimals), e.g. a_{1,234}.
+		let test_str = "<math><msub><mi>a</mi><mrow><mn>1</mn><mo>,</mo><mn>234</mn></mrow></msub></math>";
+		let target_str = "<math><msub><mi>a</mi><mn>1,234</mn></msub></math>";
+		are_strs_canonically_equal_with_locale(test_str, target_str, &[], ".", ",")?;
+
+		// Same thousands case with comma as a block separator.
+		let test_str = "<math><msub><mi>a</mi><mrow><mn>1</mn><mo>,</mo><mn>234</mn></mrow></msub></math>";
+		let target_str = "<math><msub><mi>a</mi><mn>1,234</mn></msub></math>";
+		are_strs_canonically_equal_result(test_str, target_str, &[])
 	}
 
 
