@@ -1107,7 +1107,7 @@ impl MyXPath {
         let compiled_xpath = factory.build(&xpath_with_debug_info)
                         .with_context(|| format!(
                             "Could not compile XPath for pattern:\n{}{}",
-                            &xpath, more_details(xpath)))?;
+                            xpath, more_details(xpath)))?;
         return Ok(compiled_xpath);
 
         

@@ -1922,13 +1922,13 @@ mod chem_tests {
         return f(mathml);
     }
 
-    fn collect_elements_or_err<'a>(mrow: Element<'a>, test: &str) -> Result<Vec<&'a str>> {
+    fn collect_elements_or_err<'a>(mrow: Element<'a>, test: &str) -> Result<Vec<NameStr<'a>>> {
         collect_elements(mrow).ok_or_else(|| {
             anyhow::anyhow!("collect_elements returned None for test input:\n{test}")
         })
     }
 
-    fn assert_chem_elements(test: &str, expected: bool, check: impl Fn(&[&str]) -> bool) -> Result<()> {
+    fn assert_chem_elements(test: &str, expected: bool, check: impl Fn(&[NameStr<'_>]) -> bool) -> Result<()> {
         let actual = with_parsed_mrow(test, |mrow| {
             let elements = collect_elements_or_err(mrow, test)?;
             return Ok(check(&elements));
@@ -1943,7 +1943,7 @@ mod chem_tests {
         test: &str,
         child_index: usize,
         expected: bool,
-        check: impl Fn(&[&str]) -> bool,
+        check: impl Fn(&[NameStr<'_>]) -> bool,
     ) -> Result<()> {
         let actual = with_parsed_mrow(test, |mrow| {
             let child = as_element(mrow.children()[child_index]);

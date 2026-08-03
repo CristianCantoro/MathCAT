@@ -39,7 +39,7 @@ pub fn format_element(e: Element, indent: usize) -> String {
                 }
         acc
         });
-        return format!("{}{}</{}{}>\n", answer, &handle_special_chars(&content), namespace, as_qname!(e.name()).local_part());
+        return format!("{}{}</{}{}>\n", answer, handle_special_chars(&content), namespace, as_qname!(e.name()).local_part());
         // for child in children {
         //     if let ChildOfElement::Text(t) = child {
         //         return format!("{}{}</{}{}>\n", answer, &make_invisible_chars_visible(t.text()), namespace, e.name().local_part());
@@ -63,7 +63,7 @@ pub fn format_element(e: Element, indent: usize) -> String {
 pub fn format_attrs(attrs: &[Attribute]) -> String {
     let mut result = String::new();
     for attr in attrs {
-        result += format!(" {}='{}'", as_qname!(attr.name()).local_part(), &handle_special_chars(as_str!(attr.value()))).as_str();
+        result += format!(" {}='{}'", as_qname!(attr.name()).local_part(), handle_special_chars(as_str!(attr.value()))).as_str();
     }
     result
 }
