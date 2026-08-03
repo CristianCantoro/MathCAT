@@ -2143,7 +2143,6 @@ mod chem_tests {
     }
 
     #[test]
-    #[ignore]   // It would be good to say "not chemistry" for this, but there aren't rules for that at the moment
     fn test_water_bond() -> Result<()> {
         return chem_test(|| {
         let test11 = r#"<mrow><msub><mi mathvariant='normal'>H</mi><mn>2</mn></msub><mi mathvariant='normal'>O</mi><mo>=</mo><mi>O</mi></mrow>"#;

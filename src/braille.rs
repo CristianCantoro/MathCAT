@@ -446,13 +446,12 @@ pub fn get_navigation_node_from_braille_position(mathml: Element, position: usiz
     /// find the navigation node that most tightly encapsulates the target position (0-based)
     /// 'node' is the current node we are on inside of 'mathml'
     fn find_navigation_node<'e>(mathml: Element<'e>, node: Element<'e>, target_position: usize) -> Result<SearchState<'e>> {
-        let raw_node_id = node.attribute_value("id");
-        let node_id = match raw_node_id.as_deref() {
+        let node_id = match node.attribute_value("id") {
             Some(id) => id,
             None => bail!("'id' is not present on mathml: {}", mml_to_string(node)),
         };
         N_PROBES.with(|n| {*n.borrow_mut() += 1});
-        let (braille, char_start, char_end) = braille_mathml(mathml, node_id)?;
+        let (braille, char_start, char_end) = braille_mathml(mathml, as_str!(node_id))?;
         let mut status = None;
         // debug!("find_navigation_node ({}, id={}): highlight=[{}, {});  target={}", name(node), node_id, char_start, char_end, target_position);
         if is_leaf(node) {
@@ -519,7 +518,7 @@ pub fn get_navigation_node_from_braille_position(mathml: Element, position: usiz
                     return Ok(status);
                 },
                 SearchStatus::LookInParent => {
-                    let (_, start, end) = braille_mathml(mathml, node_id)?;
+                    let (_, start, end) = braille_mathml(mathml, as_str!(node_id))?;
                     // debug!("  parent ({}) braille: start/end={}/{};  target_position={}", name(node), start, end, target_position);
                     if start <= target_position && target_position < end {
                         // debug!("  ..found: id={}", node_id);
@@ -2633,7 +2632,7 @@ impl BrailleChars {
         // also true (sort of) for capitalization -- if all caps, use double cap in front (assume abbr or Roman Numeral)
         
         // we only care about this for numbers and identifiers/text, so we filter for only those
-        let node_name = name(node);
+        let node_name = as_str!(name(node));
         let is_in_enclosed_list = node_name != "mo" && BrailleChars::is_in_enclosed_list(node);
         let is_mn_in_enclosed_list = is_in_enclosed_list && node_name == "mn";
         let mut typeface = "R".to_string();     // assumption is "R" and if attr or letter is different, something happens
@@ -2917,8 +2916,8 @@ impl BrailleChars {
                 "mo"  => !crate::canonicalize::is_relational_op(node),
                 "mtext" => {
                     let raw_text = as_text(node);
-                    let text = raw_text.trim();
-                    return text=="?" || text=="-?-" || text.is_empty();
+                    let text = as_str!(raw_text).trim();
+                    return text=="?" || text=="-?-" || text.is_empty();   // various forms of "fill in missing content" (see also Nemeth_RULEs.yaml, "omissions")
                 },
                 "mrow" => {
                     if IsBracketed::is_bracketed(node, "", "", false, false) {
@@ -2933,7 +2932,7 @@ impl BrailleChars {
                     true      
                 },
                 "menclose" => {
-                    if let Some(notation) = node.attribute_value("notation").as_deref() {
+                    if let Some(notation) = node.attribute_value("notation") {
                         if notation != "bottom" || notation != "box" {
                             return false;
                         }
@@ -3021,7 +3020,7 @@ impl NeedsToBeGrouped {
     // ordinals often have an irregular start (e.g., "half") before becoming regular.
     // if the number is irregular, return the ordinal form, otherwise return 'None'.
     fn needs_grouping_for_cmu(element: Element, _is_base: bool) -> bool {
-        let node_name = name(element);
+        let node_name = as_str!(name(element));
         let children = element.children();
         if node_name == "mrow" {
             // check for bracketed exprs
@@ -3076,10 +3075,11 @@ impl NeedsToBeGrouped {
     /// FIX: what needs to be implemented?
     fn needs_grouping_for_finnish(mathml: Element, is_base: bool) -> bool {
         use crate::xpath_functions::IsInDefinition;
-        let mut node_name = as_str!(name(mathml));
-        if mathml.attribute_value("data-roman-numeral").is_some() {
-            node_name = "mi";           // roman numerals don't follow number rules
-        }
+        let node_name = if mathml.attribute_value("data-roman-numeral").is_some() {
+            "mi"           // roman numerals don't follow number rules
+        } else {
+            as_str!(name(mathml))
+        };
 
         // FIX: the leaf rules are from UEB -- check the Swedish rules
         match node_name {
@@ -3167,10 +3167,11 @@ impl NeedsToBeGrouped {
     // if the number is irregular, return the ordinal form, otherwise return 'None'.
     fn needs_grouping_for_swedish(mathml: Element, is_base: bool) -> bool {
         use crate::xpath_functions::IsInDefinition;
-        let mut node_name = as_str!(name(mathml));
-        if mathml.attribute_value("data-roman-numeral").is_some() {
-            node_name = "mi";           // roman numerals don't follow number rules
-        }
+        let node_name = if mathml.attribute_value("data-roman-numeral").is_some() {
+            "mi"           // roman numerals don't follow number rules
+        } else {
+            as_str!(name(mathml))
+        };
 
         match node_name {
             "mn" => return false,
@@ -3234,10 +3235,11 @@ impl NeedsToBeGrouped {
         // 8. If none of the foregoing apply, the item is simply the [this element's] individual symbol.
 
         use crate::xpath_functions::IsInDefinition;
-        let mut node_name = as_str!(name(mathml));
-        if mathml.attribute_value("data-roman-numeral").is_some() {
-            node_name = "mi";           // roman numerals don't follow number rules
-        }
+        let node_name = if mathml.attribute_value("data-roman-numeral").is_some() {
+            "mi"           // roman numerals don't follow number rules
+        } else {
+            as_str!(name(mathml))
+        };
         match node_name {
             "mn" => {   
                 if !is_base {

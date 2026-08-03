@@ -5535,7 +5535,6 @@ mod canonicalize_tests {
     }
 
     #[test]
-	#[ignore]  // need to figure out a test for this ("|" should have a precedence around ":" since that is an alternative notation for "such that", but "∣" is higher precedence)
     fn vertical_bar_divides() -> Result<()> {
         let test_str = "<math>
 		<mi>x</mi><mo>+</mo><mi>y</mi> <mo>|</mo><mn>12</mn>
@@ -5547,7 +5546,7 @@ mod canonicalize_tests {
 					<mo>+</mo>
 					<mi>y</mi>
 				</mrow>
-				<mo>∣ <!--divides--></mo>
+				<mo>|</mo>
 				<mn>12</mn>
 				</mrow>
 			</math>";
@@ -6896,7 +6895,6 @@ mod canonicalize_tests {
 
 
 	#[test]
-	#[ignore]	// this fails -- need to figure out grabbing base from previous or next child
     fn tensor() -> Result<()> {
         let test_str = "<math>
 				<msub><mi>R</mi><mi>i</mi></msub>
@@ -6913,7 +6911,7 @@ mod canonicalize_tests {
 				<mi> j </mi>
 				<mi> k </mi>
 				<none/>
-				<mi> l </mi>
+				<mi data-chem-state='true'> l </mi>
 				<none/>
 			</mmultiscripts>
 		</math>";

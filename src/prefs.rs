@@ -930,6 +930,54 @@ mod tests {
         return stripped_path
     }
 
+    struct TestRulesDir {
+        path: PathBuf,
+    }
+
+    impl TestRulesDir {
+        fn path(&self) -> &Path {
+            return &self.path;
+        }
+    }
+
+    impl Drop for TestRulesDir {
+        fn drop(&mut self) {
+            let _ = std::fs::remove_dir_all(&self.path);
+        }
+    }
+
+    fn copy_dir_recursive(from: &Path, to: &Path) {
+        std::fs::create_dir_all(to).unwrap();
+        for entry in std::fs::read_dir(from).unwrap() {
+            let entry = entry.unwrap();
+            let file_type = entry.file_type().unwrap();
+            let target = to.join(entry.file_name());
+            if file_type.is_dir() {
+                copy_dir_recursive(&entry.path(), &target);
+            } else {
+                std::fs::copy(entry.path(), target).unwrap();
+            }
+        }
+    }
+
+    fn test_rules_dir_with_prefs() -> TestRulesDir {
+        let path = std::env::temp_dir().join(format!("mathcat-prefs-test-{}", fastrand::u64(..)));
+        std::fs::create_dir_all(&path).unwrap();
+
+        let source_rules = abs_rules_dir_path();
+        let prefs = std::fs::read_to_string(source_rules.join("prefs.yaml")).unwrap()
+            .replace("Language: Auto", "Language: zz");
+        std::fs::write(path.join("prefs.yaml"), prefs).unwrap();
+        std::fs::copy(source_rules.join("intent.yaml"), path.join("intent.yaml")).unwrap();
+        std::fs::copy(source_rules.join("definitions.yaml"), path.join("definitions.yaml")).unwrap();
+
+        copy_dir_recursive(&source_rules.join("Languages").join("en"), &path.join("Languages").join("en"));
+        copy_dir_recursive(&source_rules.join("Languages").join("zz"), &path.join("Languages").join("zz"));
+        copy_dir_recursive(&source_rules.join("Braille").join("Nemeth"), &path.join("Braille").join("Nemeth"));
+
+        return TestRulesDir { path };
+    }
+
     fn speech_rule_files_cache_is_empty() -> bool {
         crate::speech::SPEECH_RULES.with(|rules| rules.borrow().rule_files_cache_is_empty())
     }
@@ -1231,7 +1279,6 @@ cfg_if::cfg_if! {if #[cfg(not(feature = "include-zip"))] {
     }
 
     #[test]
-    #[ignore]   // this is an ugly test for #262 -- it changes the prefs file and so is a bad thing in general
     fn test_up_to_date() {
         use std::fs;
         use std::thread::sleep;
@@ -1261,9 +1308,6 @@ cfg_if::cfg_if! {if #[cfg(not(feature = "include-zip"))] {
         });
         assert_eq!(interface::get_spoken_text().unwrap(), "SimpleSpeak positive from zz 10");
         fs::write(&file_path, contents).unwrap();
-
-                // assert_eq!(&pref_manager.pref_to_string("SpeechStyle"), "SimpleSpeak");
-                // assert_eq!(rel_path(&pref_manager.rules_dir, pref_manager.speech.as_path()), PathBuf::from("Languages/zz/SimpleSpeak_Rules.yaml"));
     }
 
 }}
