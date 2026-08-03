@@ -2732,11 +2732,12 @@ impl BrailleChars {
     }
 
     fn get_braille_russian_chars(node: Element, text_range: Option<Range<usize>>) -> Result<String> {
-        let text = BrailleChars::substring(as_text(node), &text_range);
+        let text = BrailleChars::substring(as_str!(as_text(node)), &text_range);
         let braille_chars = braille_replace_chars(&text, node)?;
-        let Some(math_variant) = node.attribute_value("mathvariant") else {
+        let Some(raw_math_variant) = node.attribute_value("mathvariant") else {
             return Ok(braille_chars);
         };
+        let math_variant = as_str!(raw_math_variant);
 
         let mut prefix = String::new();
         let mut suffix = String::new();
