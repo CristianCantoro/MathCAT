@@ -1315,7 +1315,7 @@ cfg_if::cfg_if! {if #[cfg(not(feature = "include-zip"))] {
         let speech_rule_file = temp_rules_dir.join("Languages/zz/ClearSpeak_Rules.yaml");
         let speech_contents = fs::read_to_string(&speech_rule_file).unwrap();
         fs::write(&speech_rule_file, speech_contents.replace("ClearSpeak positive from zz", "changed positive from zz")).unwrap();
-        sleep(Duration::from_millis(5));  // make sure the modification time changes enough to be recognized
+        sleep(Duration::from_millis(20));  // make sure the modification time changes enough to be recognized
         assert_eq!(interface::get_spoken_text().unwrap(), "changed positive from zz 10",
                    "modified speech rule file was not reloaded");
 
@@ -1337,7 +1337,7 @@ cfg_if::cfg_if! {if #[cfg(not(feature = "include-zip"))] {
         let changed_unicode = unicode_contents.replace("\"1\": [t: \"N⠂\"]", "\"1\": [t: \"N⠿\"]");
         assert_ne!(changed_unicode, unicode_contents, "expected to find the Nemeth mapping for '1'");
         fs::write(&unicode_file, changed_unicode).unwrap();
-        sleep(Duration::from_millis(5));
+        sleep(Duration::from_millis(20));
         let braille_after = interface::get_braille("").unwrap();
         assert_ne!(braille_after, braille_before, "modified Nemeth unicode file was not reloaded");
         assert!(braille_after.contains('⠿'), "new Nemeth mapping for '1' not reflected in braille: {braille_after}");
