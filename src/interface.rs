@@ -57,6 +57,7 @@ thread_local! {
 
 /// Initialize the panic handler to catch panics and store the message, file, and line number in `PANIC_INFO`.
 pub fn init_panic_handler() {
+    #[cfg(not(test))]
     use std::panic;
 
     #[cfg(not(test))]
