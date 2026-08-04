@@ -1281,7 +1281,8 @@ cfg_if::cfg_if! {if #[cfg(not(feature = "include-zip"))] {
         let real_rules_dir = abs_rules_dir_path();
 
         // Only the "en" (fallback), "zz" (test language), and "Nemeth" (braille) rules are needed,
-        // plus the top-level files they include.
+        // plus the top-level files they include (incl. the full system prefs.yaml — partial YAML
+        // left keys like DecimalSeparator missing and crashed on CI with no user AppData prefs).
         copy_dir_all(&real_rules_dir.join("Languages/en"), &temp_rules_dir.join("Languages/en"));
         copy_dir_all(&real_rules_dir.join("Languages/zz"), &temp_rules_dir.join("Languages/zz"));
         copy_dir_all(&real_rules_dir.join("Intent"), &temp_rules_dir.join("Intent"));
@@ -1289,21 +1290,27 @@ cfg_if::cfg_if! {if #[cfg(not(feature = "include-zip"))] {
         fs::copy(real_rules_dir.join("definitions.yaml"), temp_rules_dir.join("definitions.yaml")).unwrap();
         fs::copy(real_rules_dir.join("intent.yaml"), temp_rules_dir.join("intent.yaml")).unwrap();
         fs::copy(real_rules_dir.join("Braille/definitions.yaml"), temp_rules_dir.join("Braille/definitions.yaml")).unwrap();
-        fs::write(temp_rules_dir.join("prefs.yaml"),
-            "---\nSpeech:\n  Language: zz\n  SpeechStyle: ClearSpeak\nNavigation: {}\nBraille:\n  BrailleCode: Nemeth\nOther: {}\n").unwrap();
+        fs::copy(real_rules_dir.join("prefs.yaml"), temp_rules_dir.join("prefs.yaml")).unwrap();
+        // Override only what this test needs (rest of prefs.yaml keeps defaults like DecimalSeparator).
+        let prefs_path = temp_rules_dir.join("prefs.yaml");
+        let prefs_text = fs::read_to_string(&prefs_path).unwrap()
+            .replace("Language: Auto", "Language: zz");
+        assert!(prefs_text.contains("Language: zz"), "failed to set Language: zz in copied prefs.yaml");
+        fs::write(&prefs_path, prefs_text).unwrap();
 
         interface::set_rules_dir(temp_rules_dir.to_str().unwrap()).unwrap();
         let _restore = RestoreGuard;
 
-        // Pin the prefs in memory (a user prefs.yaml in the config dir would otherwise override the
-        // system prefs we just wrote). Since the prefs files themselves aren't modified below,
-        // `set_preference_files` won't re-read them, so these values stick.
+        // Pin in memory so a user prefs.yaml in the config dir cannot override Language/SpeechStyle
+        // (and so SpeechStyle stays ClearSpeak until we change it for the reload check).
         PREF_MANAGER.with(|pref_manager| {
             let mut pref_manager = pref_manager.borrow_mut();
             pref_manager.set_string_pref("Language", "zz").unwrap();
             pref_manager.set_string_pref("SpeechStyle", "ClearSpeak").unwrap();
             pref_manager.set_string_pref("BrailleCode", "Nemeth").unwrap();
             assert_eq!(rel_path(&pref_manager.rules_dir, pref_manager.speech.as_path()), PathBuf::from("Languages/zz/ClearSpeak_Rules.yaml"));
+            assert_ne!(&pref_manager.pref_to_string("DecimalSeparator"), NO_PREFERENCE,
+                       "DecimalSeparator missing — system prefs.yaml incomplete");
         });
         // "All" makes MathCAT check rule-file timestamps (not just prefs), so content edits are noticed.
         interface::set_preference("CheckRuleFiles", "All").unwrap();
