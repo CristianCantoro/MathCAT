@@ -59,6 +59,7 @@ thread_local! {
 pub fn init_panic_handler() {
     use std::panic;
 
+    #[cfg(not(test))]
     panic::set_hook(Box::new(|info| {
         let location = info.location()
             .map(|l| format!("{}:{}", l.file(), l.line()))
