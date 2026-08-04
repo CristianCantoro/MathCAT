@@ -56,49 +56,68 @@ thread_local! {
 }
 
 /// Initialize the panic handler to catch panics and store the message, file, and line number in `PANIC_INFO`.
+///
+/// Installed once. Under `#[cfg(test)]` the previous hook (cargo's) is chained so assert failures
+/// still print normally; production stays silent and relies on [`report_any_panic`].
 pub fn init_panic_handler() {
-    #[cfg(not(test))]
     use std::panic;
+    use std::sync::Once;
 
-    #[cfg(not(test))]
-    panic::set_hook(Box::new(|info| {
-        let location = info.location()
-            .map(|l| format!("{}:{}", l.file(), l.line()))
-            .unwrap_or_else(|| "unknown".to_string());
+    static INSTALL: Once = Once::new();
+    INSTALL.call_once(|| {
+        let previous = panic::take_hook();
+        panic::set_hook(Box::new(move |info| {
+            let location = info.location()
+                .map(|l| format!("{}:{}", l.file(), l.line()))
+                .unwrap_or_else(|| "unknown".to_string());
 
-        let payload = info.payload();
-        let msg = if let Some(s) = payload.downcast_ref::<&'static str>() {
-            s.to_string()
-        } else if let Some(s) = payload.downcast_ref::<String>() {
-            s.clone()
-        } else {
-            "Unknown panic payload".to_string()
-        };
+            let payload = info.payload();
+            let msg = if let Some(s) = payload.downcast_ref::<&'static str>() {
+                s.to_string()
+            } else if let Some(s) = payload.downcast_ref::<String>() {
+                s.clone()
+            } else {
+                "Unknown panic payload".to_string()
+            };
 
-        // Use try_with/try_borrow_mut to ensure the hook never panics itself
-        let _ = PANIC_INFO.try_with(|cell| {
-            if let Ok(mut slot) = cell.try_borrow_mut() {
-                *slot = Some((msg, location, 0));
+            // Use try_with/try_borrow_mut to ensure the hook never panics itself
+            let _ = PANIC_INFO.try_with(|cell| {
+                if let Ok(mut slot) = cell.try_borrow_mut() {
+                    *slot = Some((msg, location, 0));
+                }
+            });
+
+            // cargo test (and other previous hooks) still print; production ATs do not want that spam.
+            if cfg!(test) {
+                previous(info);
             }
-        });
-    }));
+        }));
+    });
 }
 
 pub fn report_any_panic<T>(result: Result<Result<T, Error>, Box<dyn std::any::Any + Send>>) -> Result<T, Error> {
     match result {
         Ok(val) => val,
-        Err(_) => {
-            // Retrieve the smuggled info
-            let details = PANIC_INFO.with(|cell| cell.borrow_mut().take());
-            
-            if let Some((msg, file, line)) = details {
-                Err(anyhow::anyhow!(
+        Err(payload) => {
+            // Prefer details captured by the hook (includes file:line).
+            if let Some((msg, file, line)) = PANIC_INFO.with(|cell| cell.borrow_mut().take()) {
+                return Err(anyhow::anyhow!(
                     "MathCAT crash! Please report the following information: '{}' at {}:{}",
                     msg, file, line
-                ))
-            } else {
-                Err(anyhow::anyhow!("MathCAT crash! -- please report"))
+                ));
             }
+            // Fallback: catch_unwind always provides the payload even if the hook did not run.
+            let msg = if let Some(s) = payload.downcast_ref::<&'static str>() {
+                (*s).to_string()
+            } else if let Some(s) = payload.downcast_ref::<String>() {
+                s.clone()
+            } else {
+                return Err(anyhow::anyhow!("MathCAT crash! -- please report"));
+            };
+            Err(anyhow::anyhow!(
+                "MathCAT crash! Please report the following information: '{}'",
+                msg
+            ))
         }
     }
 } 
