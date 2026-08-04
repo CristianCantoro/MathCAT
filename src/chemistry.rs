@@ -278,6 +278,8 @@ fn clean_mrow_children_mark_pass(children: &[Element]) {
                     child.remove_attribute(CHEM_FORMULA_OPERATOR);
                     child.remove_attribute(CHEM_EQUATION_OPERATOR);
                     child.remove_attribute(CHEMICAL_BOND);
+                    child.remove_attribute(CHEM_STATE);
+                    
                 } else {
                     start = Some(i);
                 }
@@ -557,6 +559,7 @@ fn is_changed_after_unmarking_chemistry(mathml: Element) -> bool {
         mathml.remove_attribute(CHEM_FORMULA_OPERATOR);
         mathml.remove_attribute(CHEM_EQUATION_OPERATOR);
         mathml.remove_attribute(CHEMICAL_BOND);
+        mathml.remove_attribute(CHEM_STATE);
         if mathml.attribute(MERGED_TOKEN).is_some() {
             unmerge_element(mathml);
             return true;    // need to re-parse
