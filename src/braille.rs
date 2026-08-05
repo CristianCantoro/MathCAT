@@ -895,6 +895,7 @@ static UEB_INDICATOR_REPLACEMENTS: phf::Map<&str, &str> = phf_map! {
     "1" => "⠰",      // Grade 1 symbol
     "𝟙" => "⠰⠰",     // Grade 1 word
     "L" => "",       // Letter left in to assist in locating letters
+    "A" => "",       // Letter accent indicator -- should be followed by accent cells and then "L" for char
     "D" => "XXX",    // German (Deutsche) -- from prefs
     "G" => "⠨",      // Greek
     "V" => "⠨⠈",     // Greek Variants
@@ -933,6 +934,24 @@ fn is_letter_number(ch: char) -> bool {
     matches!(ch, '⠁' | '⠃' | '⠉' | '⠙' | '⠑' | '⠋' | '⠛' | '⠓' | '⠊' | '⠚')
 }
 
+fn is_braille_char(ch: char) -> bool {
+    ('\u{2800}'..='\u{28ff}').contains(&ch)
+}
+
+/// After an 'A' accent indicator, skip accent braille cells and return the index of the following 'L'.
+/// Returns None if the accented-letter pattern is malformed.
+fn index_after_accent_to_l(chars: &[char], after_a: usize) -> Option<usize> {
+    let mut j = after_a;
+    while j < chars.len() && is_braille_char(chars[j]) {
+        j += 1;
+    }
+    if j < chars.len() && chars[j] == 'L' {
+        Some(j)
+    } else {
+        None
+    }
+}
+
 static SHORT_FORMS: phf::Set<&str> = phf_set! {
     "L⠁L⠃", "L⠁L⠃L⠧", "L⠁L⠉", "L⠁L⠉L⠗", "L⠁L⠋",
     "L⠁L⠋L⠝", "L⠁L⠋L⠺", "L⠁L⠛", "L⠁L⠛L⠌", "L⠁L⠇",
@@ -950,7 +969,7 @@ static SHORT_FORMS: phf::Set<&str> = phf_set! {
 };
 
 fn is_letter_prefix(ch: char) -> bool {
-    matches!(ch, 'B' | 'I' | '𝔹' | 'S' | 'T' | 'D' | 'C' | '𝐶' | '𝑐')
+    matches!(ch, 'B' | 'I' | '𝔹' | 'S' | 'T' | 'D' | 'C' | '𝐶' | '𝑐' | 'A')
 }
 
 // Trim braille spaces before and after braille indicators
@@ -958,7 +977,7 @@ fn is_letter_prefix(ch: char) -> bool {
 // Note: fraction over is not listed due to example 42(4) which shows a space before the "/"
 // static ref REMOVE_SPACE_BEFORE_BRAILLE_INDICATORS: Regex =
 //     Regex::new(r"(⠄⠄⠄|⠤⠤⠤)W+([⠼⠸⠪])").unwrap();
-static REPLACE_INDICATORS: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"([1𝟙SB𝔹TIREDGVHP𝐶𝑐CLMNW𝐖swe,.-—―#ocb])").unwrap());
+static REPLACE_INDICATORS: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"([1𝟙SB𝔹TIREDGVHP𝐶𝑐CLAMNW𝐖swe,.-—―#ocb])").unwrap());
 static COLLAPSE_SPACES: LazyLock<Regex> = LazyLock::new(|| Regex::new(r"⠀⠀+").unwrap());
 
 /// Transcriber-defined typeforms pulled from prefs (their braille is configurable), used by the
@@ -1340,6 +1359,16 @@ fn capitals_to_word_mode(braille: &str) -> String {
                 // Greek letters are a bit exceptional in that the pattern is "CGLx" -- bump 'i'
                 next_non_cap += 1;
             }
+            if chars[next_non_cap] == 'A' {
+                // Accented capital: CA...Lx
+                match index_after_accent_to_l(&chars, next_non_cap + 1) {
+                    Some(i_l) => next_non_cap = i_l,
+                    None => {
+                        error!("capitals_to_word_mode: internal error: didn't find L after CA in '{}'.",
+                               chars[i..].iter().take(8).collect::<String>());
+                    }
+                }
+            }
             if chars[next_non_cap] != 'L' {
                 error!("capitals_to_word_mode: internal error: didn't find L after C in '{}'.",
                        chars[i..next_non_cap+2].iter().collect::<String>().as_str());
@@ -1347,6 +1376,25 @@ fn capitals_to_word_mode(braille: &str) -> String {
             let i_braille_char = next_non_cap + 2;
             result.push_str(String::from_iter(&chars[i..i_braille_char]).as_str());
             i = i_braille_char;
+        } else if ch == 'A' {
+            // Lowercase accented letter: A...Lx
+            if is_word_mode {
+                result.push('e');
+                is_word_mode = false;
+            }
+            match index_after_accent_to_l(&chars, i + 1) {
+                Some(i_l) => {
+                    let i_braille_char = i_l + 2;
+                    result.push_str(String::from_iter(&chars[i..i_braille_char]).as_str());
+                    i = i_braille_char;
+                }
+                None => {
+                    error!("capitals_to_word_mode: internal error: didn't find L after A in '{}'.",
+                           chars[i..].iter().take(8).collect::<String>());
+                    result.push(ch);
+                    i += 1;
+                }
+            }
         } else if ch == 'L' {       // must be lowercase -- uppercase consumed above
             // assert!(LETTERS.contains(&unhighlight(chars[i+1]))); not true for other alphabets
             if is_word_mode {
@@ -1561,14 +1609,22 @@ fn remove_unneeded_mode_changes(raw_braille: &str, start_mode: UEB_Mode, start_d
                 match ch {
                     'L' => {
                         // note: be aware of '#' case for Numeric because '1' might already be generated
-                        // let prev_ch = if i > 1 {chars[i-1]} else {'1'};   // '1' -- anything beside ',' or '.'
-                        // if duration == UEB_Duration::Symbol || 
-                        //     ( ",. ".contains(prev_ch) && LETTER_NUMBERS.contains(&unhighlight(chars[i+1])) ) {
-                        //     result.push('1');        // need to retain grade 1 indicator (RUEB 6.5.2)
-                        // }
                         // let the default case handle pushing on the chars for the letter
                         result.push(ch);
                         i += 1;
+                    },
+                    'A' => {
+                        // Accented letter: keep A...Lx together so accent cells don't end G1 symbol mode
+                        match index_after_accent_to_l(&chars, i + 1) {
+                            Some(i_l) => {
+                                result.extend(chars[i..i_l + 2].iter().copied()); // A + accents + L + letter
+                                i = i_l + 2;
+                            }
+                            None => {
+                                result.push(ch);
+                                i += 1;
+                            }
+                        }
                     },
                     '1' | '𝟙' => {
                         assert!(ch == '1' || duration != UEB_Duration::Symbol);     // if '𝟙', should be Word or Passage duration
@@ -1628,14 +1684,29 @@ fn remove_unneeded_mode_changes(raw_braille: &str, start_mode: UEB_Mode, start_d
                         i += right_matched_chars.len();
                     },
                     'C' => {
-                        // Want 'C' before 'L'; Could be CC for word cap -- if so, eat it and move on
+                        // Want 'C' before 'L' (or 'CA...L' / 'CGL'). Could be CC for word cap -- if so, eat it and move on
                         // Note: guaranteed that there is a char after the 'C', so chars[i+1] is safe
                         if chars[i+1] == 'C' {
                             cap_word_mode = true;
                             i += 1;
                         } else {
-                            let is_greek = chars[i+1] == 'G';
-                            let (is_alone, right_matched_chars, n_letters) = stands_alone(&chars, if is_greek {i+2} else {i+1});
+                            let mut letter_idx = i + 1;
+                            let is_greek = chars[letter_idx] == 'G';
+                            if is_greek {
+                                letter_idx += 1;
+                            }
+                            if letter_idx < chars.len() && chars[letter_idx] == 'A' {
+                                match index_after_accent_to_l(&chars, letter_idx + 1) {
+                                    Some(i_l) => letter_idx = i_l,
+                                    None => {
+                                        error!("Internal error: 'CA' without L at index={i} in '{raw_braille}'");
+                                        result.push('C');
+                                        i += 1;
+                                        continue;
+                                    }
+                                }
+                            }
+                            let (is_alone, right_matched_chars, n_letters) = stands_alone(&chars, letter_idx);
                             // GTM 1.2.1 says we only need to use G1 for single letters or sequences that are a shortform (e.g, "ab")
                             if is_alone && (n_letters == 1 || is_short_form(&right_matched_chars[..2*n_letters])) {
                                 // debug!("  is_alone -- pushing '1'");
@@ -1648,12 +1719,33 @@ fn remove_unneeded_mode_changes(raw_braille: &str, start_mode: UEB_Mode, start_d
                             result.push('C');
                             if is_greek {
                                 result.push('G');
-                                i += 1;
                             }
                             start_g2_letter = Some(i);
-                            // debug!("  pushing 'C' + {:?}", right_matched_chars);
+                            // right_matched starts at A or L (not including C/G)
                             right_matched_chars.iter().for_each(|&ch| result.push(ch));
-                            i += 1 + right_matched_chars.len();
+                            i += 1 + if is_greek {1} else {0} + right_matched_chars.len();
+                        }
+                    },
+                    'A' => {
+                        // Accented lowercase letter: A...Lx
+                        match index_after_accent_to_l(&chars, i + 1) {
+                            Some(i_l) => {
+                                if start_g2_letter.is_none() {
+                                    start_g2_letter = Some(i);
+                                }
+                                let (is_alone, right_matched_chars, n_letters) = stands_alone(&chars, i_l);
+                                if is_alone && (n_letters == 1 || is_short_form(&right_matched_chars[..2*n_letters])) {
+                                    result.push('1');
+                                    mode = UEB_Mode::Grade1;
+                                }
+                                right_matched_chars.iter().for_each(|&ch| result.push(ch));
+                                i += right_matched_chars.len();
+                            }
+                            None => {
+                                error!("Internal error: 'A' without L at index={i} in '{raw_braille}'");
+                                result.push(ch);
+                                i += 1;
+                            }
                         }
                     },
                     '1' => {
@@ -1746,8 +1838,21 @@ fn stands_alone(chars: &[char], i: usize) -> (bool, &[char], usize) {
     // we scan forward and check the conditions for "standing-alone"
     assert_eq!(chars[i], 'L', "'stands_alone' starts with non 'L'");
     // debug!("stands_alone: i={}, chars: {:?}", i, chars);
-    if !left_side_stands_alone(&chars[0..i]) {
-        return (false, &chars[i..i+2], 0);
+    // Exclude accent prefix A... immediately before this L (part of the same letter)
+    let mut letter_start = i;
+    let mut left_end = i;
+    if left_end > 0 {
+        let mut j = left_end;
+        while j > 0 && is_braille_char(chars[j - 1]) {
+            j -= 1;
+        }
+        if j > 0 && chars[j - 1] == 'A' {
+            letter_start = j - 1;
+            left_end = j - 1;
+        }
+    }
+    if !left_side_stands_alone(&chars[0..left_end]) {
+        return (false, &chars[letter_start..i+2], 0);
     }
 
     let (mut is_alone, n_letters, n_right_matched) = right_side_stands_alone(&chars[i+2..]);
@@ -1759,7 +1864,8 @@ fn stands_alone(chars: &[char], i: usize) -> (bool, &[char], usize) {
             is_alone = false;
         }
     }
-    return (is_alone, &chars[i..i+2+n_right_matched], n_letters);
+    // Include any A... prefix so callers emit the full accented letter
+    return (is_alone, &chars[letter_start..i+2+n_right_matched], n_letters);
 
     /// chars before 'L'
     fn left_side_stands_alone(chars: &[char]) -> bool {
@@ -1803,6 +1909,17 @@ fn stands_alone(chars: &[char], i: usize) -> (bool, &[char], usize) {
             if !intervening_chars_mode && ch == 'L' {
                 n_letters += 1;
                 i += 1;       // ignore 'Lx' and also ignore 'ox'
+            } else if !intervening_chars_mode && ch == 'A' {
+                // Accented letter A...Lx counts as one letter
+                match index_after_accent_to_l(chars, i + 1) {
+                    Some(i_l) => {
+                        n_letters += 1;
+                        i = i_l + 1; // now at letter braille; loop end advances past it
+                    }
+                    None => {
+                        return (false, n_letters, i);
+                    }
+                }
             } else if ch == 'c' || ch == 'b' {
                 i += 1;       // ignore 'Lx' and also ignore 'ox'
             } else if is_right_intervening_char(ch) {  
