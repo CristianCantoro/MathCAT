@@ -40,6 +40,16 @@ fn quotation_mark() -> Result<()> {
 }
 
 #[test]
+fn absolute_value_end_regression() -> Result<()> {
+    let expr = "<math><mrow><mo>|</mo><mrow><mi>x</mi><mo>+</mo><mn>1</mn></mrow><mo>|</mo></mrow></math>";
+    test_prefs("de", "ClearSpeak", vec![
+        ("Verbosity", "Terse"),
+        ("ClearSpeak_AbsoluteValue", "AbsEnd"),
+    ], expr, "Betrag von x plus 1, ende Betrag")?;
+    Ok(())
+}
+
+#[test]
 fn ellipses_auto_start() -> Result<()> {
     let expr = "<math>
             <mi>…</mi><mo>,</mo>

@@ -476,7 +476,7 @@
       if: "$ClearSpeak_AbsoluteValue = 'AbsEnd'"
       then:
       - pause: short
-      - T: "end"
+      - T: "ende"
       - x: "$WordToSay"
   - pause: short
 
