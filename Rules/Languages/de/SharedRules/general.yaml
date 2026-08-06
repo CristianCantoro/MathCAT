@@ -56,16 +56,20 @@
   replace:
   - bookmark: "@id"
   - test:
+    - if: "$SpeechStyle = 'ClearSpeak' and ($ClearSpeak_SetMemberSymbol = 'In' or ($ClearSpeak_SetMemberSymbol = 'Auto' and ancestor::m:set)) and preceding::m:mo[1][.='∈' or .='∊' or .='∉']"
+      then: [T: "den"]
+      else: [T: "die"]
+  - test:
     - if: ".='ℂ'"
-      then: [T: "die komplexen zahlen"]      # phrase('the complex numbers' include 2 parts)
+      then: [T: "komplexen zahlen"]      # phrase('the complex numbers' include 2 parts)
     - else_if: ".='ℕ'"
-      then: [T: "die natürlichen zahlen"]      # phrase('the natural numbers' begin at 1)
+      then: [T: "natürlichen zahlen"]      # phrase('the natural numbers' begin at 1)
     - else_if: ".='ℚ'"
-      then: [T: "die rationalen zahlen"]      # phrase('the rational numbers' are the fraction of 2 integers)
+      then: [T: "rationalen zahlen"]      # phrase('the rational numbers' are the fraction of 2 integers)
     - else_if: ".='ℝ'"
-      then: [T: "die reellen zahlen"]      # phrase('the real numbers' can be both positive and negative)
+      then: [T: "reellen zahlen"]      # phrase('the real numbers' can be both positive and negative)
     - else_if: ".='ℤ'"
-      then: [T: "die ganzen zahlen"]      # phrase('the integers' are natural numbers above 0)
+      then: [T: "ganzen zahlen"]      # phrase('the integers' are natural numbers above 0)
       else: [x: "text()"] # shouldn't happen
 
 - name: real-part
