@@ -88,6 +88,21 @@ fn english_rute_plural_regression() -> Result<()> {
     Ok(())
 }
 
+#[test]
+fn non_si_unit_plural_regression() -> Result<()> {
+    let expr = r#"<math>
+        <mn>1</mn><mi intent=":unit">h</mi><mo>,</mo><mn>2</mn><mi intent=":unit">h</mi><mo>,</mo>
+        <mn>1</mn><mi intent=":unit">d</mi><mo>,</mo><mn>2</mn><mi intent=":unit">d</mi><mo>,</mo>
+        <mn>1</mn><mi intent=":unit">w</mi><mo>,</mo><mn>2</mn><mi intent=":unit">w</mi><mo>,</mo>
+        <mn>1</mn><mi intent=":unit">pc</mi><mo>,</mo><mn>2</mn><mi intent=":unit">pc</mi><mo>,</mo>
+        <mn>1</mn><mi intent=":unit">ha</mi><mo>,</mo><mn>2</mn><mi intent=":unit">ha</mi><mo>,</mo>
+        <mn>1</mn><mi intent=":unit">Kib</mi><mo>,</mo><mn>2</mn><mi intent=":unit">Kib</mi>
+    </math>"#;
+    test("de", "SimpleSpeak", expr,
+        "1 stunde, komma 2 stunden, komma 1 tag komma 2 tage, komma 1 woche komma 2 wochen, komma 1 parsec, komma 2 parsec, komma 1 hektar, komma 2 hektar, komma 1 kibi-bit, komma 2 kibi-bit")?;
+    Ok(())
+}
+
 /*
 #[test]
 fn si_base_with_prefixes() -> Result<()> {
