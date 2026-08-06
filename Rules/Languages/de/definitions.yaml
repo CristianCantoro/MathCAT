@@ -159,16 +159,23 @@
   }
 
 - PluralForms: {
-    "inch": "zoll", "square inch": "quadratzoll", "cubic inch": "kubikzoll",
-    "foot": "füße", "square foot": "quadratfuß", "cubic foot": "kubikfuß",
-    "board foot": "brettfuß",
-    "degree celsius": "grad celsius",
-    "degree fahrenheit": "grad fahrenheit",
-    "hertz": "hertz",
-    "siemens": "siemens",
-    "revolution per minute": "umdrehungen pro minute",
-    "mile per hour": "meilen pro stunde",
-    "mile per gallon": "meilen pro gallone"
+    "ampere": "ampere", "candela": "candela", "kelvin": "kelvin",
+    "gramm": "gramm", "meter": "meter", "mol": "mol", "sekunde": "sekunden",
+    "becquerel": "becquerel", "coulomb": "coulomb", "grad celsius": "grad celsius",
+    "farad": "farad", "gray": "gray", "henry": "henry", "hertz": "hertz",
+    "joule": "joule", "katal": "katal", "lumen": "lumen", "lux": "lux",
+    "newton": "newton", "ohm": "ohm", "pascal": "pascal", "siemens": "siemens",
+    "sievert": "sievert", "tesla": "tesla", "volt": "volt", "watt": "watt", "weber": "weber",
+    "liter": "liter", "tonne": "tonnen", "dalton": "dalton", "neper": "neper",
+    "atommasse-einheit": "atommasse-einheiten", "elektronenvolt": "elektronenvolt",
+    "radiant": "radianten", "steradiant": "steradianten", "jahr": "jahre",
+    "bogenminute": "bogenminuten", "bogensekunde": "bogensekunden", "bit": "bit",
+    "byte": "byte", "baud": "baud",
+    "zoll": "zoll", "fuß": "füße", "meile": "meilen", "rute": "ruten",
+    "glied": "glieder", "kette": "ketten", "fass": "fässer", "gallone": "gallonen",
+    "grad fahrenheit": "grad fahrenheit",
+    "umdrehungen pro minute": "umdrehungen pro minute",
+    "meile pro stunde": "meilen pro stunde", "meile pro gallone": "meilen pro gallone"
   }
 
 

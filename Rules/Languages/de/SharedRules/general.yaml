@@ -300,7 +300,7 @@
           # HACK: '\uF8FE' is used internally for the concatenation char by 'ct' -- this gets the prefix concatenated to the base
           then: [x: "$Word"]
         - else_if: "DefinitionValue($Word, 'Speech', 'PluralForms') != ''"
-          then: [x: "DefinitionValue($Word, 'Speech', 'PluralForms')"]
+          then: [x: "DefinitionValue($Word, 'Speech', 'PluralForms')", ct: " "]
           else: [x: "$Word", ct: "s"]
       else:
       - x: "$Prefix"
@@ -310,7 +310,7 @@
           # HACK: '\uF8FE' is used internally for the concatenation char by 'ct' -- this gets the prefix concatenated to the base
           then: [x: "concat('\uF8FE', $Word)"]
         - else_if: "DefinitionValue($Word, 'Speech', 'PluralForms') != ''"
-          then: [x: "concat('\uF8FE', DefinitionValue($Word, 'Speech', 'PluralForms'))"]
+          then: [x: "concat('\uF8FE', DefinitionValue($Word, 'Speech', 'PluralForms'))", ct: " "]
           else: [x: "concat('\uF8FE', $Word)", ct: "s"]
 
     
