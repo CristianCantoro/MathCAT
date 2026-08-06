@@ -79,12 +79,12 @@ fn si_unit_plural_regression() -> Result<()> {
 }
 
 #[test]
-fn english_ruthe_plural_regression() -> Result<()> {
+fn english_rute_plural_regression() -> Result<()> {
     let expr = r#"<math>
         <mn>1</mn><mi intent=":unit">rd</mi><mo>,</mo>
         <mn>2</mn><mi intent=":unit">rd</mi>
     </math>"#;
-    test("de", "SimpleSpeak", expr, "1 ruthe komma 2 ruten")?;
+    test("de", "SimpleSpeak", expr, "1 rute komma 2 ruten")?;
     Ok(())
 }
 

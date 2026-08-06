@@ -107,7 +107,7 @@
     "in": "zoll",
     "ft": "fuß",
     "mi": "meile",
-    "rd": "ruthe",
+    "rd": "rute",
     "li": "glied",
     "ch": "kette",
 
@@ -171,7 +171,7 @@
     "radiant": "radianten", "steradiant": "steradianten", "jahr": "jahre",
     "bogenminute": "bogenminuten", "bogensekunde": "bogensekunden", "bit": "bit",
     "byte": "byte", "baud": "baud",
-    "zoll": "zoll", "fuß": "füße", "meile": "meilen", "ruthe": "ruten",
+    "zoll": "zoll", "fuß": "füße", "meile": "meilen", "rute": "ruten",
     "glied": "glieder", "kette": "ketten", "fass": "fässer", "gallone": "gallonen",
     "grad fahrenheit": "grad fahrenheit",
     "umdrehungen pro minute": "umdrehungen pro minute",
