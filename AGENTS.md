@@ -35,6 +35,7 @@ but add common mistakes of AI agents here instead.
 - do not do any git commands unless explicitly asked for
 - Rust coverage is in `target/coverage/`.
 - When working with GitHub, e.g. looking at PRs and issues, check if the GitHub CLI is installed (`gh --version`).
+- When writing tests, add a brief description explaining the purpose and expected behaviour. Avoid complex setups like using heavily parameterized tests (eg `@pytest.mark.parametrize` for Python)
 
 ## Fuzzing (`fuzz/` + cargo-fuzz)
 - Install: `cargo install cargo-fuzz`, use a **nightly** toolchain (`rustup run nightly cargo fuzz …`).
