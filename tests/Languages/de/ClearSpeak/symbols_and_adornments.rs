@@ -39,6 +39,23 @@ fn quotation_mark() -> Result<()> {
     Ok(())
 }
 
+/// Compound relation symbols must use German descriptions rather than English fallbacks.
+#[test]
+fn compound_relation_symbols_are_localized() -> Result<()> {
+    let expr = "<math><mo>⪑</mo><mo>⪒</mo><mo>⪤</mo></math>";
+    test("de", "ClearSpeak", expr,
+        "kleiner als über größer als über doppelter Gleichheitslinie; größer als über kleiner als über doppelter Gleichheitslinie; größer als überlappend mit kleiner als")?;
+    Ok(())
+}
+
+/// A geometric ray uses the German term rather than the English fallback.
+#[test]
+fn geometric_ray_is_localized() -> Result<()> {
+    let expr = "<math><mover><mrow><mi>X</mi><mo>&#x2062;</mo><mi>Y</mi></mrow><mo>→</mo></mover></math>";
+    test("de", "ClearSpeak", expr, "strahl groß x groß y")?;
+    Ok(())
+}
+
 #[test]
 fn absolute_value_end_regression() -> Result<()> {
     let expr = "<math><mrow><mo>|</mo><mrow><mi>x</mi><mo>+</mo><mn>1</mn></mrow><mo>|</mo></mrow></math>";
