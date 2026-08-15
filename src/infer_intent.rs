@@ -285,7 +285,7 @@ pub fn intent_function_is_arity_mode(intent_name: &str, fixity: &str) -> bool {
 }
 
 /// Glue words for an exact arity match: `arg_count - 1` words, else `None`.
-fn intent_function_arity_glue<'a>(after_eq: &'a str, arg_count: usize) -> Option<Vec<&'a str>> {
+fn intent_function_arity_glue(after_eq: &str, arg_count: usize) -> Option<Vec<&str>> {
     if arg_count == 0 {
         return None;
     }
