@@ -570,6 +570,10 @@ impl InsertChildren {
                     )
                 );
                 for i in 2..n_nodes+1 {
+                    // Make the 1-based index of the following child available to separators (e.g. arity glue).
+                    expanded_result.push(Replacement::SetVariables(Box::new(SetVariables {
+                        variables: VariableDefinitions::from_literal_number("InsertIndex", i as f64)?,
+                    })));
                     expanded_result.extend_from_slice(&self.replacements.replacements);
                     expanded_result.push(
                         Replacement::XPath(
@@ -1694,6 +1698,16 @@ impl fmt::Display for VariableValues<'_> {
 impl VariableDefinitions {
     fn new(len: usize) -> VariableDefinitions {
         return VariableDefinitions{ defs: Vec::with_capacity(len) };
+    }
+
+    /// Single variable bound to a numeric literal (used when expanding `insert:` separators).
+    fn from_literal_number(name: &str, value: f64) -> Result<VariableDefinitions> {
+        let mut defs = VariableDefinitions::new(1);
+        defs.push(VariableDefinition {
+            name: name.to_string(),
+            value: MyXPath::new(value.to_string())?,
+        });
+        return Ok(defs);
     }
 
     fn build(defs: &Yaml) -> Result<VariableDefinitions> {
