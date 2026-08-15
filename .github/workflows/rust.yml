@@ -60,7 +60,7 @@ jobs:
         directory: '.'
         path: 'Rules'
     - name: Upload Rules.zip
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v5
       with:
         name: 'Rules.zip'
         path: 'Rules.zip'
