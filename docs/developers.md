@@ -76,7 +76,7 @@ fn test_simple_fraction() {
 
 ## Helpful Links
 
-* [MathJax Demo](https://www.mathjax.org/#demo): lets you paste a MathML fragment and inspect its browser rendering.
+* [MathCAT Demo]([https://www.mathjax.org/#demo](https://daisy.github.io/MathCATDemo/)): lets you paste a MathML fragment and inspect its displayed math, speech and braille.
 
 ### Test Coverage
 
