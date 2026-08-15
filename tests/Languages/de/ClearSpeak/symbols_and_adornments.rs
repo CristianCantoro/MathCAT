@@ -48,6 +48,19 @@ fn compound_relation_symbols_are_localized() -> Result<()> {
     Ok(())
 }
 
+/// Unicode integral and logical-relation names must not fall back to English.
+#[test]
+fn unicode_integral_and_logical_symbols_are_localized() -> Result<()> {
+    test("de", "ClearSpeak", "<math><mo>⨎</mo></math>", "Integral mit doppeltem Strich")?;
+    test("de", "ClearSpeak", "<math><mo>⨛</mo></math>", "Integral mit Überstrich")?;
+    test("de", "ClearSpeak", "<math><mo>⩏</mo></math>", "doppelte quadratische Vereinigung")?;
+    test("de", "ClearSpeak", "<math><mo>⩐</mo></math>",
+        "geschlossene Vereinigung mit Serifen und Smash-Produkt")?;
+    test("de", "ClearSpeak", "<math><mo>⩞</mo></math>",
+        "logisches Und mit doppeltem Überstrich")?;
+    Ok(())
+}
+
 /// A geometric ray uses the German term rather than the English fallback.
 #[test]
 fn geometric_ray_is_localized() -> Result<()> {
