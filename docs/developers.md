@@ -76,7 +76,7 @@ fn test_simple_fraction() {
 
 ## Helpful Links
 
-* [MathJax Demo](https://www.mathjax.org/#demo) (archived) lets you paste a MathML fragment and inspect its browser rendering. It can be useful when checking whether an input expression itself renders as expected.
+* [MathJax Demo](https://www.mathjax.org/#demo): lets you paste a MathML fragment and inspect its browser rendering.
 
 ### Test Coverage
 
