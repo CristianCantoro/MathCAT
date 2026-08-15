@@ -78,11 +78,16 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        gh release delete latest --yes --cleanup-tag 2>/dev/null || true
+        REPO="${{ github.repository }}"
+        SHA="${{ github.sha }}"
+        # No checkout in this job — always pass --repo.
+        gh release delete latest --repo "$REPO" --yes --cleanup-tag || true
+        gh api --method DELETE "repos/${REPO}/git/refs/tags/latest" || true
         gh release create latest \
-          --repo "${{ github.repository }}" \
-          --target "${{ github.sha }}" \
+          --repo "$REPO" \
+          --target "$SHA" \
           --prerelease \
+          --latest=false \
           --title "Development Build" \
-          --notes "Development build from ${{ github.sha }}" \
+          --notes "Development build from ${SHA}" \
           Rules.zip
