@@ -2871,16 +2871,13 @@ impl BrailleChars {
     }
 
     fn get_braille_russian_chars(node: Element, text_range: Option<Range<usize>>) -> Result<String> {
+        // Russian italic typeform for letters is left unchanged pending external advice.
         let text = BrailleChars::substring(as_str!(as_text(node)), &text_range);
-        let mut braille_chars = braille_replace_chars(&text, node)?;
+        let braille_chars = braille_replace_chars(&text, node)?;
         let Some(raw_math_variant) = node.attribute_value("mathvariant") else {
-            return Ok(braille_chars.replace('I', ""));
+            return Ok(braille_chars);
         };
         let math_variant = as_str!(raw_math_variant);
-        let italic_ok = BrailleChars::uses_italic_typeform(as_str!(name(node)), &text);
-        if !italic_ok {
-            braille_chars = braille_chars.replace('I', "");
-        }
 
         let mut prefix = String::new();
         let mut suffix = String::new();
@@ -2888,8 +2885,7 @@ impl BrailleChars {
             prefix.push('⠻');
             suffix.insert(0, '⠻');
         }
-        // Italic typeform only for digits (not math letters)
-        if math_variant.contains("italic") && italic_ok && !braille_chars.contains('I') {
+        if math_variant.contains("italic") && !braille_chars.contains('I') {
             prefix.push('⠸');
             suffix.insert(0, '⠸');
         }
