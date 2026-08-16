@@ -26,7 +26,7 @@ but add common mistakes of AI agents here instead.
 - In sandboxed runs, if needed:
   - set `UV_CACHE_DIR=/tmp/uv-cache`
   - rerun with escalated permissions if macOS `system-configuration` panics occur.
-- *always* self-validate: `ùv run pytest`
+- self-validate appropriately with: `uv run pytest`
 
 ## Agent Instructions
 - Do not mirror README content here; keep guidance agent-specific.
