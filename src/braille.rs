@@ -2737,7 +2737,7 @@ impl BrailleChars {
         let raw_math_variant = node.attribute_value("mathvariant");
         let math_variant = raw_math_variant.as_deref();
         let text = BrailleChars::substring(as_str!(as_text(node)), &text_range);
-        let node_name = name(node);
+        let node_name = as_str!(name(node));
         let italic_ok = BrailleChars::uses_italic_typeform(node_name, &text);
         let  attr_typeface = match math_variant {
             None => "R",
@@ -2832,7 +2832,7 @@ impl BrailleChars {
         // mathvariant could be "sans-serif-bold-italic" -- get the parts
         // Italic typeform for digits (GTM 2.7); math letters do not get italic (GTM 1.5).
         let math_variant = math_variant.unwrap();
-        let italic_ok = BrailleChars::uses_italic_typeform(name(node), &text);
+        let italic_ok = BrailleChars::uses_italic_typeform(as_str!(name(node)), &text);
         let italic = italic_ok && math_variant.contains("italic");
         if italic && !braille_chars.contains('I') {
             braille_chars = "I".to_string() + &braille_chars;
@@ -2877,7 +2877,7 @@ impl BrailleChars {
             return Ok(braille_chars.replace('I', ""));
         };
         let math_variant = as_str!(raw_math_variant);
-        let italic_ok = BrailleChars::uses_italic_typeform(name(node), &text);
+        let italic_ok = BrailleChars::uses_italic_typeform(as_str!(name(node)), &text);
         if !italic_ok {
             braille_chars = braille_chars.replace('I', "");
         }
@@ -2934,7 +2934,7 @@ impl BrailleChars {
         // mathvariant could be "sans-serif-bold-italic" -- get the parts
         // CMU: italic typeform for digits only (not math letters)
         let math_variant = math_variant.unwrap();
-        let italic_ok = BrailleChars::uses_italic_typeform(name(node), &text);
+        let italic_ok = BrailleChars::uses_italic_typeform(as_str!(name(node)), &text);
         let italic = italic_ok && math_variant.contains("italic");
         if italic && !braille_chars.contains('I') {
             braille_chars = "I".to_string() + &braille_chars;
