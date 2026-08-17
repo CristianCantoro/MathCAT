@@ -13,7 +13,7 @@ but add common mistakes of AI agents here instead.
   - `ClearSpeak_Rules.yaml`, `SimpleSpeak_Rules.yaml`
   - `SharedRules/`, `unicode.yaml`, `unicode-full.yaml`, `definitions.yaml`, `navigate.yaml`
 - `build.rs` can bundle rules into `rules.zip` when `include-zip` is enabled.
-- CI packages `Rules.zip` (verbatim) and `Rules-minimized.zip` (flow-style `Languages/**/unicode*.yaml` only) via `uv run --no-project --script PythonScripts/package_rules.py Rules <output> [--minimize]`. Both omit `Languages/zz`; the `test-rules-package` job restores `zz` from git after unzip so unit tests still run against release-like archives.
+- CI packages `Rules.zip` (verbatim) and `Rules-minimized.zip` (flow-style `Languages/**/unicode*.yaml` only) via `uv run --no-project --script PythonScripts/package_rules.py Rules <output> [--minimize]`. Each language/braille subdir is stored as `<name>/<name>.zip` (matching `build.rs`); top-level and `Intent/` YAML stay loose. Both omit `Languages/zz`; the `test-rules-package` job restores `zz` from git after unzip so unit tests still run against release-like archives.
 
 ## Translation Conventions
 - `t:` means untranslated or unverified.

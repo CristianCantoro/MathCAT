@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import io
 import zipfile
 from pathlib import Path
 
@@ -9,6 +10,12 @@ import yaml
 
 from rules_packaging.minimize import dump_flow_style, load_yaml, minimize_yaml_text
 from rules_packaging.package import package_rules
+
+
+def read_nested_zip_text(archive: zipfile.ZipFile, outer_path: str, inner_path: str) -> str:
+    """Read ``inner_path`` from a zip file stored inside the outer archive."""
+    with zipfile.ZipFile(io.BytesIO(archive.read(outer_path))) as inner:
+        return inner.read(inner_path).decode("utf-8")
 
 
 def test_minimize_yaml_strips_comments_and_uses_flow_style() -> None:
@@ -25,17 +32,22 @@ def test_minimize_yaml_strips_comments_and_uses_flow_style() -> None:
 
 
 def test_package_rules_standard_zip_layout(tmp_path: Path) -> None:
-    """Standard packaging preserves Rules/ prefix inside the zip."""
+    """Standard packaging preserves Rules/ prefix and per-language inner zips."""
     rules = tmp_path / "Rules"
-    rules.mkdir()
+    lang = rules / "Languages" / "en"
+    lang.mkdir(parents=True)
     (rules / "prefs.yaml").write_text("- SpeechStyle: [t: \"ClearSpeak\"]\n", encoding="utf-8")
+    (lang / "unicode.yaml").write_text("- \"+\": [t: \"plus\"]\n", encoding="utf-8")
 
     output = tmp_path / "Rules.zip"
     package_rules(rules, output, minimize=False)
 
     with zipfile.ZipFile(output) as archive:
         names = archive.namelist()
-    assert "Rules/prefs.yaml" in names
+        assert "Rules/prefs.yaml" in names
+        assert "Rules/Languages/en/en.zip" in names
+        assert "Rules/Languages/en/unicode.yaml" not in names
+        assert read_nested_zip_text(archive, "Rules/Languages/en/en.zip", "unicode.yaml").replace("\r\n", "\n") == "- \"+\": [t: \"plus\"]\n"
 
 
 def test_dump_flow_style_quotes_infinity() -> None:
@@ -60,12 +72,12 @@ def test_should_not_minimize_braille_unicode(tmp_path: Path) -> None:
 
     assert stats["minimized_yaml_files"] == 0
     with zipfile.ZipFile(output) as archive:
-        text = archive.read("Rules/Braille/Nemeth/unicode.yaml").decode("utf-8")
+        text = read_nested_zip_text(archive, "Rules/Braille/Nemeth/Nemeth.zip", "unicode.yaml")
     assert text.replace("\r\n", "\n") == source.replace("\r\n", "\n")
 
 
-def test_package_rules_minimized_smaller_than_standard(tmp_path: Path) -> None:
-    """Minimized archives use flow-style YAML and are not larger than standard."""
+def test_package_rules_minimized_matches_release_layout(tmp_path: Path) -> None:
+    """Minimized archives use inner language zips and flow-style unicode YAML."""
     rules = tmp_path / "Rules"
     lang = rules / "Languages" / "en"
     lang.mkdir(parents=True)
@@ -94,8 +106,11 @@ def test_package_rules_minimized_smaller_than_standard(tmp_path: Path) -> None:
     assert minimized.stat().st_size <= standard.stat().st_size
 
     with zipfile.ZipFile(minimized) as archive:
-        unicode_text = archive.read("Rules/Languages/en/unicode.yaml").decode("utf-8")
-        defs_text = archive.read("Rules/Languages/en/definitions.yaml").decode("utf-8")
+        names = archive.namelist()
+        assert "Rules/Languages/en/en.zip" in names
+        assert "Rules/Languages/en/unicode.yaml" not in names
+        unicode_text = read_nested_zip_text(archive, "Rules/Languages/en/en.zip", "unicode.yaml")
+        defs_text = read_nested_zip_text(archive, "Rules/Languages/en/en.zip", "definitions.yaml")
     assert "#" not in unicode_text
     assert "real=inf" in defs_text
     assert yaml.safe_load(unicode_text) is not None

@@ -8,6 +8,7 @@ import zipfile
 from pathlib import Path
 
 from .minimize import copy_rules_tree
+from .release_layout import apply_release_layout
 
 
 def zip_directory(source_dir: Path, zip_path: Path) -> None:
@@ -38,6 +39,7 @@ def package_rules(source: Path, output: Path, *, minimize: bool = False) -> dict
             shutil.copytree(source, staged_rules)
             minimized, copied, warnings = 0, sum(1 for p in staged_rules.rglob("*") if p.is_file()), []
 
+        apply_release_layout(staged_rules)
         zip_directory(staged_rules, output)
 
     return {
