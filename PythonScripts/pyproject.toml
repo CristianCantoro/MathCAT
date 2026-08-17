@@ -22,7 +22,6 @@ dependencies = [
 
 [project.scripts]
 audit-translations = "audit_translations.cli:main"
-package-rules = "audit_translations.rules_packaging.cli:main"
 
 [dependency-groups]
 dev = [
@@ -31,7 +30,7 @@ dev = [
 ]
 
 [build-system]
-requires = ["uv_build>=0.9.25,<0.13"]
+requires = ["uv_build>=0.9.25,<0.10.0"]
 build-backend = "uv_build"
 
 [tool.uv]
