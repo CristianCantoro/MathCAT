@@ -22,7 +22,7 @@ dependencies = [
 
 [project.scripts]
 audit-translations = "audit_translations.cli:main"
-package-rules = "rules_packaging.cli:main"
+package-rules = "audit_translations.rules_packaging.cli:main"
 
 [dependency-groups]
 dev = [
@@ -31,14 +31,14 @@ dev = [
 ]
 
 [build-system]
-requires = ["uv_build>=0.9.25,<0.10.0"]
+requires = ["uv_build>=0.9.25,<0.13"]
 build-backend = "uv_build"
 
 [tool.uv]
 exclude-newer = "1 week"
 
 [tool.uv.build-backend]
-module-name = ["audit_translations", "rules_packaging"]
+module-name = "audit_translations"
 module-root = ""
 
 [tool.ruff]
