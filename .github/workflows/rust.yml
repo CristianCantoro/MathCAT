@@ -93,6 +93,8 @@ jobs:
       run: |
         rm -rf Rules
         unzip -q "${{ matrix.rules_zip }}"
+        # Release zips omit the synthetic zz test language; restore it for unit tests only.
+        git checkout HEAD -- Rules/Languages/zz
     - name: Run tests (${{ matrix.feature_name }})
       run: cargo test ${{ matrix.features }} --verbose
 
