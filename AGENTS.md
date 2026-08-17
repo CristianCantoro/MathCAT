@@ -13,7 +13,7 @@ but add common mistakes of AI agents here instead.
   - `ClearSpeak_Rules.yaml`, `SimpleSpeak_Rules.yaml`
   - `SharedRules/`, `unicode.yaml`, `unicode-full.yaml`, `definitions.yaml`, `navigate.yaml`
 - `build.rs` can bundle rules into `rules.zip` when `include-zip` is enabled.
-- CI packages `Rules.zip` (verbatim) and `Rules-minimized.zip` (flow-style `Languages/**/unicode*.yaml` only) via `uv run PythonScripts/package_rules.py Rules <output> [--minimize]`.
+- CI packages `Rules.zip` (verbatim) and `Rules-minimized.zip` (flow-style `Languages/**/unicode*.yaml` only) via `uv run --script PythonScripts/package_rules.py Rules <output> [--minimize]`.
 
 ## Translation Conventions
 - `t:` means untranslated or unverified.
