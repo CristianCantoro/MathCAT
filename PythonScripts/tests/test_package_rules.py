@@ -8,9 +8,13 @@ from pathlib import Path
 
 import yaml
 
-from rules_packaging.compress import RULES_ZIP_COMPRESSION
-from rules_packaging.minimize import dump_flow_style, load_yaml, minimize_yaml_text
-from rules_packaging.package import package_rules
+from package_rules import (
+    RULES_ZIP_COMPRESSION,
+    dump_flow_style,
+    load_yaml,
+    minimize_yaml_text,
+    package_rules,
+)
 
 
 def read_nested_zip_text(archive: zipfile.ZipFile, outer_path: str, inner_path: str) -> str:
