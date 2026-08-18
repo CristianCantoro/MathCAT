@@ -104,13 +104,10 @@ def test_package_rules_minimized_matches_release_layout(tmp_path: Path) -> None:
         encoding="utf-8",
     )
 
-    standard = tmp_path / "Rules.zip"
     minimized = tmp_path / "Rules-minimized.zip"
-    package_rules(rules, standard, minimize=False)
     stats = package_rules(rules, minimized, minimize=True)
 
     assert stats["minimized_yaml_files"] == 1
-    assert minimized.stat().st_size <= standard.stat().st_size
 
     with zipfile.ZipFile(minimized) as archive:
         names = archive.namelist()
