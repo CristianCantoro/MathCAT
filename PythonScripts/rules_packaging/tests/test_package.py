@@ -8,6 +8,7 @@ from pathlib import Path
 
 import yaml
 
+from rules_packaging.compress import RULES_ZIP_COMPRESSION
 from rules_packaging.minimize import dump_flow_style, load_yaml, minimize_yaml_text
 from rules_packaging.package import package_rules
 
@@ -47,6 +48,8 @@ def test_package_rules_standard_zip_layout(tmp_path: Path) -> None:
         assert "Rules/prefs.yaml" in names
         assert "Rules/Languages/en/en.zip" in names
         assert "Rules/Languages/en/unicode.yaml" not in names
+        with zipfile.ZipFile(io.BytesIO(archive.read("Rules/Languages/en/en.zip"))) as inner:
+            assert all(info.compress_type == RULES_ZIP_COMPRESSION for info in inner.infolist())
         assert read_nested_zip_text(archive, "Rules/Languages/en/en.zip", "unicode.yaml").replace("\r\n", "\n") == "- \"+\": [t: \"plus\"]\n"
 
 

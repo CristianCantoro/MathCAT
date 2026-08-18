@@ -4,9 +4,9 @@ from __future__ import annotations
 
 import shutil
 import tempfile
-import zipfile
 from pathlib import Path
 
+from .compress import open_rules_zip
 from .minimize import copy_rules_tree
 from .release_layout import apply_release_layout
 
@@ -14,7 +14,7 @@ from .release_layout import apply_release_layout
 def zip_directory(source_dir: Path, zip_path: Path) -> None:
     """Write ``source_dir`` contents into ``zip_path`` preserving relative paths."""
     zip_path.parent.mkdir(parents=True, exist_ok=True)
-    with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
+    with open_rules_zip(zip_path) as archive:
         for path in sorted(source_dir.rglob("*")):
             if path.is_file():
                 archive.write(path, path.relative_to(source_dir.parent).as_posix())

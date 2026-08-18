@@ -3,8 +3,9 @@
 from __future__ import annotations
 
 import shutil
-import zipfile
 from pathlib import Path
+
+from .compress import open_rules_zip
 
 YAML_SUFFIXES = {".yaml", ".yml"}
 SKIP_LANGUAGE_DIRS = {"zz"}
@@ -53,7 +54,7 @@ def _write_yaml_zip(source_dir: Path, zip_path: Path) -> int:
     if not yaml_files:
         return 0
 
-    with zipfile.ZipFile(zip_path, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
+    with open_rules_zip(zip_path) as archive:
         for path in yaml_files:
             archive.write(path, path.relative_to(source_dir).as_posix())
     return len(yaml_files)
