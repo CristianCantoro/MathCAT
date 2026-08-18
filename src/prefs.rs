@@ -26,7 +26,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use log::{debug, error, warn};
 use std::path::{Path, PathBuf};
-use std::sync::LazyLock;
+use std::sync::{LazyLock, Mutex};
 use crate::speech::{as_str_checked, RulesFor, FileAndTime};
 use std::collections::{HashMap, HashSet};
 use phf::phf_set;
@@ -458,6 +458,14 @@ impl PreferenceManager {
     /// Unzip the files if needed
     /// Returns true if it unzipped them
     pub fn unzip_files(path: &Path, lang: &str, default_lang: Option<&str>) -> Result<bool> {
+        // cargo test runs many threads against the same Rules/ tree. Extracting en.zip
+        // concurrently can truncate unicode.yaml and yaml-rust then reports "Didn't find rules!".
+        static UNZIP_LOCK: Mutex<()> = Mutex::new(());
+        let _guard = UNZIP_LOCK.lock().unwrap_or_else(|poisoned| poisoned.into_inner());
+        return PreferenceManager::unzip_files_locked(path, lang, default_lang);
+    }
+
+    fn unzip_files_locked(path: &Path, lang: &str, default_lang: Option<&str>) -> Result<bool> {
         thread_local!{
             /// when a language/braille code dir is unzipped, it is recorded here
             static UNZIPPED_FILES: RefCell<HashSet<String>> = RefCell::new( HashSet::with_capacity(31));
@@ -479,7 +487,7 @@ impl PreferenceManager {
                     // try again in parent dir of regional language
                     let language = lang.split_once('-').unwrap_or((lang, "")).0; // get the parent language
                     // debug!("unzip_files: trying again in parent language: {}", language);
-                    PreferenceManager::unzip_files(path, language, default_lang)
+                    PreferenceManager::unzip_files_locked(path, language, default_lang)
                                                 .with_context(|| format!("Couldn't open zip file {zip_file_string} in parent {language}: {e}."))?
                 } else {
                     // maybe just regional dialects
@@ -488,7 +496,7 @@ impl PreferenceManager {
                     for dir in regional_dirs {
                         // debug!("unzip_files: trying again in subdir: {}", dir.display());
                         let language = format!("{}-{}", lang, dir.file_name().unwrap().to_str().unwrap());
-                        if let Ok(result) =PreferenceManager::unzip_files(path, &language, default_lang) {
+                        if let Ok(result) =PreferenceManager::unzip_files_locked(path, &language, default_lang) {
                             return Ok(result);
                         }
                     }
@@ -501,11 +509,6 @@ impl PreferenceManager {
         };
 
         UNZIPPED_FILES.with( |unzipped_files| unzipped_files.borrow_mut().insert(zip_file_string.clone()) );
-        // debug!("  unzip_files: unzipped {} files from {}", result, &zip_file_string);
-        // UNZIPPED_FILES.with( |unzipped_files| {
-        //     debug!("unzip_files: unzipped_files: {:?}", unzipped_files.borrow());
-        // });
-        
         return Ok(result);
     }
 

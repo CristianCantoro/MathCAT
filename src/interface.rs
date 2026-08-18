@@ -651,7 +651,8 @@ pub fn get_supported_languages() -> Result<Vec<String>> {
         let mut language_paths = lang_paths.iter()
                         .map(|path| path.strip_prefix(&lang_dir).unwrap()
                                                   .to_string_lossy()
-                                                  .replace(std::path::MAIN_SEPARATOR, "-")
+                                                  // include-zip stores paths with '/'; native trees use MAIN_SEPARATOR.
+                                                  .replace(['/', '\\'], "-")
                                                   .to_string())
                         .filter(|string_path| !string_path.is_empty() )
                         .collect::<Vec<String>>();

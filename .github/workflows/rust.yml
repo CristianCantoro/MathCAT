@@ -46,15 +46,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v5
-    - uses: astral-sh/setup-uv@v10.0.1
-    - name: Remove empty Rules directories
-      run: find Rules -type d -empty -delete
-    - name: Remove test directory
-      run: rm -r Rules/Languages/zz
+    - uses: dtolnay/rust-toolchain@stable
     - name: Create Rules.zip
-      run: uv run --no-project --script PythonScripts/package_rules.py Rules Rules.zip
+      run: cargo run --bin package-rules -- Rules Rules.zip
     - name: Create Rules-minimized.zip
-      run: uv run --no-project --script PythonScripts/package_rules.py Rules Rules-minimized.zip --minimize
+      run: cargo run --bin package-rules -- Rules Rules-minimized.zip --minimize
     - name: Upload Rules.zip
       uses: actions/upload-artifact@v7
       with:
