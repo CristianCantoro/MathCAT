@@ -26,7 +26,7 @@ use std::cell::RefCell;
 use std::rc::Rc;
 use log::{debug, error, warn};
 use std::path::{Path, PathBuf};
-use std::sync::{LazyLock, Mutex};
+use std::sync::LazyLock;
 use crate::speech::{as_str_checked, RulesFor, FileAndTime};
 use std::collections::{HashMap, HashSet};
 use phf::phf_set;
@@ -458,10 +458,6 @@ impl PreferenceManager {
     /// Unzip the files if needed
     /// Returns true if it unzipped them
     pub fn unzip_files(path: &Path, lang: &str, default_lang: Option<&str>) -> Result<bool> {
-        // cargo test runs many threads against the same Rules/ tree. Extracting en.zip
-        // concurrently can truncate unicode.yaml and yaml-rust then reports "Didn't find rules!".
-        static UNZIP_LOCK: Mutex<()> = Mutex::new(());
-        let _guard = UNZIP_LOCK.lock().unwrap_or_else(|poisoned| poisoned.into_inner());
         return PreferenceManager::unzip_files_locked(path, lang, default_lang);
     }
 
