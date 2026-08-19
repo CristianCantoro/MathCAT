@@ -143,6 +143,7 @@ def test_cli_main_rich_only_filters_issue_groups(capsys, monkeypatch) -> None:
             "shared-only",
         ),
     ],
+    ids=["exclude-root", "exclude-shared-rules"],
 )
 def test_cli_main_exclude_uses_relative_paths(
     tmp_path,
